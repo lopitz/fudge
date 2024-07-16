@@ -1,0 +1,126 @@
+{
+  "className": "de.opitz.poc.featuredoc.features.profile.ProfileTest",
+  "name": "Profile",
+  "scenarios": [
+    {
+      "className": "de.opitz.poc.featuredoc.features.profile.ProfileTest",
+      "testMethodName": "providesAWelcomePage",
+      "description": "Provides a welcome page",
+      "tagIds": [
+        "de.opitz.poc.featuredoc.jgiven.Feature-profile",
+        "de.opitz.poc.featuredoc.jgiven.Story-JUSTDE-1123",
+        "de.opitz.poc.featuredoc.jgiven.Story-JUSTDE-1124"
+      ],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "an anonymous user",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "an anonymous user"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 1672625,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "a configured site $",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a configured site"
+                },
+                {
+                  "value": "Germany",
+                  "argumentInfo": {
+                    "argumentName": "siteName",
+                    "formattedValue": "Germany"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 1292541,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "requesting the profile",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "requesting the profile"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 34500,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "an error page is returned",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "an error page is returned"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 28250,
+              "depth": 0,
+              "parentFailed": false
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "durationInNanos": 14615042
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 14615042
+    }
+  ],
+  "tagMap": {
+    "de.opitz.poc.featuredoc.jgiven.Feature-profile": {
+      "fullType": "de.opitz.poc.featuredoc.jgiven.Feature",
+      "type": "Feature",
+      "name": "feature",
+      "value": "profile",
+      "description": "",
+      "href": ""
+    },
+    "de.opitz.poc.featuredoc.jgiven.Story-JUSTDE-2311": {
+      "fullType": "de.opitz.poc.featuredoc.jgiven.Story",
+      "type": "Story",
+      "value": "JUSTDE-1123",
+      "description": "\u003ca href\u003d\"https://jira.corp.ebay.com/browse/JUSTDE-1123\u003eJUSTDE-1123\u003c/a\u003e",
+      "href": ""
+    },
+    "de.opitz.poc.featuredoc.jgiven.Story-JUSTDE-2412": {
+      "fullType": "de.opitz.poc.featuredoc.jgiven.Story",
+      "type": "Story",
+      "value": "JUSTDE-1124",
+      "description": "\u003ca href\u003d\"https://jira.corp.ebay.com/browse/JUSTDE-1124\u003eJUSTDE-1124\u003c/a\u003e",
+      "href": ""
+    }
+  }
+}

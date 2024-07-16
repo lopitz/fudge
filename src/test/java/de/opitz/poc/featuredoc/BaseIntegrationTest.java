@@ -12,7 +12,7 @@ public abstract class BaseIntegrationTest {
     private int port;
 
     protected Response callIndex() {
-        return RestAssured.get("http://localhost:%d".formatted());
+        return RestAssured.get("http://localhost:%d".formatted(port));
     }
 
 }

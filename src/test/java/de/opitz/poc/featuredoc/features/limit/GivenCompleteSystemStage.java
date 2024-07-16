@@ -7,7 +7,7 @@ public class GivenCompleteSystemStage extends Stage<GivenCompleteSystemStage> {
         return self();
     }
 
-    public GivenCompleteSystemStage a_configured_site_$(String siteName) {
+    public GivenCompleteSystemStage a_configured_site_$_on_$(String siteName, String platform) {
         return self();
     }
 }

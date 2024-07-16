@@ -1,0 +1,136 @@
+{
+  "className": "de.opitz.poc.featuredoc.features.limit.LimitTest",
+  "name": "Limit",
+  "scenarios": [
+    {
+      "className": "de.opitz.poc.featuredoc.features.limit.LimitTest",
+      "testMethodName": "providesAWelcomePage",
+      "description": "Provides a welcome page",
+      "tagIds": [
+        "de.opitz.poc.featuredoc.jgiven.Feature-yearly limit",
+        "de.opitz.poc.featuredoc.jgiven.Story-JUSTDE-2311",
+        "de.opitz.poc.featuredoc.jgiven.Story-JUSTDE-2412"
+      ],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "an anonymous user",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "an anonymous user"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 1672625,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "a configured site $ on $",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a configured site"
+                },
+                {
+                  "value": "Germany",
+                  "argumentInfo": {
+                    "argumentName": "siteName",
+                    "formattedValue": "Germany"
+                  }
+                },
+                {
+                  "value": "on"
+                },
+                {
+                  "value": "mWeb",
+                  "argumentInfo": {
+                    "argumentName": "platform",
+                    "formattedValue": "mWeb"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 1421250,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "requesting the welcome page",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "requesting the welcome page"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 34500,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "the german welcome page is returned",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the german welcome page is returned"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 28250,
+              "depth": 0,
+              "parentFailed": false
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "durationInNanos": 14615042
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 14615042
+    }
+  ],
+  "tagMap": {
+    "de.opitz.poc.featuredoc.jgiven.Feature-yearly limit": {
+      "fullType": "de.opitz.poc.featuredoc.jgiven.Feature",
+      "type": "Feature",
+      "name": "feature",
+      "value": "yearly limit",
+      "description": "",
+      "href": ""
+    },
+    "de.opitz.poc.featuredoc.jgiven.Story-JUSTDE-2311": {
+      "fullType": "de.opitz.poc.featuredoc.jgiven.Story",
+      "type": "Story",
+      "value": "JUSTDE-2311",
+      "description": "\u003ca href\u003d\"https://jira.corp.ebay.com/browse/JUSTDE-2311\u003eJUSTDE-2311\u003c/a\u003e",
+      "href": ""
+    },
+    "de.opitz.poc.featuredoc.jgiven.Story-JUSTDE-2412": {
+      "fullType": "de.opitz.poc.featuredoc.jgiven.Story",
+      "type": "Story",
+      "value": "JUSTDE-2412",
+      "description": "\u003ca href\u003d\"https://jira.corp.ebay.com/browse/JUSTDE-2412\u003eJUSTDE-2412\u003c/a\u003e",
+      "href": ""
+    }
+  }
+}
