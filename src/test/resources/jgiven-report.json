@@ -107,6 +107,111 @@
       ],
       "casesAsTable": false,
       "durationInNanos": 14615042
+    },
+    {
+      "className": "de.opitz.poc.featuredoc.features.limit.LimitTest",
+      "testMethodName": "a_different_story",
+      "description": "a different story",
+      "tagIds": [
+        "de.opitz.poc.featuredoc.jgiven.Feature-yearly limit",
+        "de.opitz.poc.featuredoc.jgiven.Story-JUSTDE-1011"
+      ],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "an anonymous user",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "an anonymous user"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 31166,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "a configured site $ on $",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a configured site"
+                },
+                {
+                  "value": "Germany",
+                  "argumentInfo": {
+                    "argumentName": "siteName",
+                    "formattedValue": "Germany"
+                  }
+                },
+                {
+                  "value": "on"
+                },
+                {
+                  "value": "mWeb",
+                  "argumentInfo": {
+                    "argumentName": "platform",
+                    "formattedValue": "mWeb"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 186500,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "requesting the welcome page",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "requesting the welcome page"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 17333,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "the german welcome page is returned",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the german welcome page is returned"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 16334,
+              "depth": 0,
+              "parentFailed": false
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "durationInNanos": 982458
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 982458
     }
   ],
   "tagMap": {
@@ -130,6 +235,13 @@
       "type": "Story",
       "value": "JUSTDE-2412",
       "description": "\u003ca href\u003d\"https://jira.corp.ebay.com/browse/JUSTDE-2412\u003eJUSTDE-2412\u003c/a\u003e",
+      "href": ""
+    },
+    "de.opitz.poc.featuredoc.jgiven.Story-JUSTDE-1011": {
+      "fullType": "de.opitz.poc.featuredoc.jgiven.Story",
+      "type": "Story",
+      "value": "JUSTDE-1011",
+      "description": "\u003ca href\u003d\"https://jira.corp.ebay.com/browse/JUSTDE-1011\u003eJUSTDE-1011\u003c/a\u003e",
       "href": ""
     }
   }

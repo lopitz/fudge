@@ -28,4 +28,19 @@ class LimitTest extends SpringScenarioTest<GivenCompleteSystemStage, WhenLimitSt
             .the_german_welcome_page_is_returned();
     }
 
+    @Test
+    @DisplayName("Different story")
+    @Story({"JUSTDE-1011"})
+    void a_different_story() {
+        given()
+            .an_anonymous_user().and()
+            .a_configured_site_$_on_$("Germany", "mWeb");
+
+        when()
+            .requesting_the_welcome_page();
+
+        then()
+            .the_german_welcome_page_is_returned();
+    }
+
 }
