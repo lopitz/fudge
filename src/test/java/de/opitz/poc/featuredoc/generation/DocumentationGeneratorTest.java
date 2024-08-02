@@ -11,6 +11,7 @@ import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class DocumentationGeneratorTest {
@@ -54,6 +55,21 @@ class DocumentationGeneratorTest {
 
         var result = Files.lines(fileSystem.getPath("target", "feature-documentation", "index.md")).collect(Collectors.joining("\n"));
         assertThat(result).isNotEmpty().contains("existing template");
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("should generate a file for each scenario/behavior of a features")
+    void shouldGenerateAFileForEachScenarioBehaviorOfAFeatures() {
+        var parser = new JGivenJsonParser();
+        var fileSystem = prepareFileSystem();
+        var generator = new DocumentationGenerator(parser, fileSystem);
+        generator.generateDocumentation(new DocumentationParameters(fileSystem.getPath("/target", "jgiven-reports"), null, null, null));
+
+        var actual = Files.find(fileSystem.getPath("target", "feature-documentation", "yearly limit"), 1, (_, _) -> true).toList();
+        assertThat(actual).hasSize(2);
+        var result = Files.lines(fileSystem.getPath("target", "feature-documentation", "yearly limit", "index.md")).collect(Collectors.joining("\n"));
+        assertThat(result).contains("# yearly limit");
     }
 
     @SneakyThrows

@@ -17,25 +17,26 @@ not available yet, as JGiven doesn't allow to generate custom elements in the JS
 
 ## Behavior
 
-{{#tests}}
+{{#scenarios}}
 **Description:** {{description}}
 
-
+{{#tests}}
 **Given**
-    {{#givenLines}}
-    {{.}}
-    {{/givenLines}}
+&nbsp;&nbsp;&nbsp;&nbsp;{{#givenLines}}
+&nbsp;&nbsp;&nbsp;&nbsp;{{.}}
+&nbsp;&nbsp;&nbsp;&nbsp;{{/givenLines}}
 
 **When**
-    {{#whenLines}}
-    {{.}}
-    {{/whenLines}}
+&nbsp;&nbsp;&nbsp;&nbsp;{{#whenLines}}
+&nbsp;&nbsp;&nbsp;&nbsp;{{.}}
+&nbsp;&nbsp;&nbsp;&nbsp;{{/whenLines}}
 
 **When**
-    {{#thenLines}}
-    {{.}}
-    {{/thenLines}}
+&nbsp;&nbsp;&nbsp;&nbsp;{{#thenLines}}
+&nbsp;&nbsp;&nbsp;&nbsp;{{.}}
+&nbsp;&nbsp;&nbsp;&nbsp;{{/thenLines}}
 
 {{/tests}}
+{{/scenarios}}
 
 {{/feature}}
