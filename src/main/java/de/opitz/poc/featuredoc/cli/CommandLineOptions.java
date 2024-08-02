@@ -24,7 +24,7 @@ public final class CommandLineOptions {
     private static Option buildSourceOption() {
         return Option
             .builder()
-            .required()
+            .required(false)
             .option("s")
             .longOpt("source")
             .hasArg()
@@ -33,7 +33,7 @@ public final class CommandLineOptions {
     }
 
     private static Option buildTargetOption() {
-        return Option.builder().required().option("t").longOpt("target").hasArg().desc("defines the target directory").build();
+        return Option.builder().required(false).option("t").longOpt("target").hasArg().desc("defines the target directory").build();
     }
 
     public static Options buildCommandLineOptions() {

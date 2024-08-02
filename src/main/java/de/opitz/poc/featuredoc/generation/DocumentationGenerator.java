@@ -52,10 +52,11 @@ public class DocumentationGenerator {
 
     public void generateDocumentation(DocumentationParameters documentationParameters) throws IOException {
         var rootTargetPath = Optional.ofNullable(documentationParameters.targetPath()).orElse(fileSystem.getPath("target", "feature-documentation"));
+        var sourcePath = Optional.ofNullable(documentationParameters.sourceRootPath()).orElse(fileSystem.getPath("target", "jgiven-reports"));
         var target = Files.createDirectories(rootTargetPath);
         var mustacheFactory = new DefaultMustacheFactory();
         try (var reportUrls = Files
-            .find(documentationParameters.sourceRootPath(), 5, (path, attributes) -> path
+            .find(sourcePath, 5, (path, attributes) -> path
                 .toString()
                 .endsWith(".json") && attributes.isRegularFile() && attributes.size() > 0 && Files.isReadable(path))
             .map(Path::toUri)

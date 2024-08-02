@@ -13,7 +13,11 @@ public class SourceOptionHandler implements OptionHandler {
 
     @Override
     public ProgramConfiguration handleCommandLine(CommandLine commandLine, ProgramConfiguration currentConfiguration) {
-        var sourcePath = Path.of(commandLine.getOptionValue(CommandLineOptions.sourceOption()));
+        var optionValue = commandLine.getOptionValue(CommandLineOptions.sourceOption());
+        if (optionValue == null) {
+            return currentConfiguration;
+        }
+        var sourcePath = Path.of(optionValue);
         var sourceFile = sourcePath.toFile();
         if (!sourceFile.exists()) {
             consoleWriter.printf("The given source directory [%s] does not exist.%n", sourcePath);

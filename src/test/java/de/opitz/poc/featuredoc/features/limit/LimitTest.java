@@ -11,8 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 @Feature(
     value = "yearly limit",
     description = """
-        ## Description
-
         This is just a description in Markdown syntax.
 
         It should tell me, whether this is feasible and good looking. For that I'm trying to come up with some longer text, to showcase what could happen in reality,

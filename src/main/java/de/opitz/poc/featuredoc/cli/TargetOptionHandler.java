@@ -15,7 +15,11 @@ public class TargetOptionHandler implements OptionHandler {
 
     @Override
     public ProgramConfiguration handleCommandLine(CommandLine commandLine, ProgramConfiguration currentConfiguration) {
-        var targetPath = currentConfiguration.fileSystem().getPath(commandLine.getOptionValue(CommandLineOptions.targetOption()));
+        var optionValue = commandLine.getOptionValue(CommandLineOptions.targetOption());
+        if (optionValue == null) {
+            return currentConfiguration;
+        }
+        var targetPath = currentConfiguration.fileSystem().getPath(optionValue);
         return checkThatTargetFolderExistsAndCreateIfNecessary(targetPath, currentConfiguration);
     }
 
