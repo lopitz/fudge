@@ -8,6 +8,9 @@ import java.util.Objects;
 import de.opitz.poc.featuredoc.cli.CommandLineOptions;
 import de.opitz.poc.featuredoc.cli.OptionHandler;
 import de.opitz.poc.featuredoc.cli.ProgramConfiguration;
+import de.opitz.poc.featuredoc.generation.DocumentationGenerator;
+import de.opitz.poc.featuredoc.generation.DocumentationParameters;
+import de.opitz.poc.featuredoc.jgiven.JGivenJsonParser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
@@ -42,6 +45,8 @@ public class FeatureDocumentationGenerator {
             if (config.helpRequested()) {
                 return;
             }
+            var generator = new DocumentationGenerator(new JGivenJsonParser());
+            generator.generateDocumentation(new DocumentationParameters(config.source(), config.target(), null, null));
         } catch (ParseException exp) {
             log.error("Parsing failed.  Reason: {}", exp.getMessage(), exp);
         } catch (Exception e) {

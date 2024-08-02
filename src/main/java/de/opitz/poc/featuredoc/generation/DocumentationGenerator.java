@@ -1,6 +1,7 @@
 package de.opitz.poc.featuredoc.generation;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.io.UncheckedIOException;
@@ -50,10 +51,20 @@ public class DocumentationGenerator {
             var report = jgivenParser.parseReportFiles(reportUrls);
             var features = report.tags(feature -> Objects.equals(feature.type(), "Feature")).distinct().sorted(Comparator.comparing(JGivenTag::value)).toList();
             var folderMapping = buildFeaturePathStructure(features, target);
-            buildFeatureIndex(buildFeatureDtos(features, folderMapping), mustacheFactory, target);
+            buildFeatureIndex(buildFeatureDtos(features, folderMapping), mustacheFactory, target, findFeaturesIndexTemplate(documentationParameters));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    private InputStream findFeaturesIndexTemplate(DocumentationParameters documentationParameters) throws IOException {
+        if (documentationParameters.featuresIndexTemplate() != null) {
+            var templatePath = fileSystem.getPath(documentationParameters.featuresIndexTemplate());
+            if (Files.isReadable(templatePath) && Files.isRegularFile(templatePath)) {
+                return Files.newInputStream(templatePath);
+            }
+        }
+        return ClassLoader.getSystemClassLoader().getResource("templates/FeaturesIndexPage.md").openStream();
     }
 
     private List<Feature> buildFeatureDtos(List<JGivenTag> features, Map<String, String> folderMapping) {
@@ -87,9 +98,10 @@ public class DocumentationGenerator {
     private void buildFeatureIndex(
         List<Feature> features,
         DefaultMustacheFactory mustacheFactory,
-        Path targetRootPath
+        Path targetRootPath,
+        InputStream featuresIndexTemplate
     ) {
-        try (var templateReader = new InputStreamReader(ClassLoader.getSystemClassLoader().getResource("templates/FeaturesIndexPage.md").openStream())) {
+        try (var templateReader = new InputStreamReader(featuresIndexTemplate)) {
             var mustache = mustacheFactory.compile(templateReader, "features-index");
             var variables = Map.of(
                 "targetPath", targetRootPath.toString(),
