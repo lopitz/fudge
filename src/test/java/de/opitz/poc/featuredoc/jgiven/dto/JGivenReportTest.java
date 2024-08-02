@@ -5,7 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static de.opitz.poc.featuredoc.jgiven.TestIOUtils.loadFile;
+import static de.opitz.poc.featuredoc.jgiven.TestIOUtils.fileUrl;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class JGivenReportTest {
@@ -14,7 +14,7 @@ class JGivenReportTest {
 
     @BeforeEach
     void setupTest() {
-        report = new JGivenJsonParser().parseReportFiles(loadFile("jgiven-report.json"));
+        report = new JGivenJsonParser().parseReportFiles(fileUrl("jgiven-report.json"));
     }
 
     @Test

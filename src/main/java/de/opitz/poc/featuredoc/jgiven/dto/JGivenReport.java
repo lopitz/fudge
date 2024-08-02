@@ -84,4 +84,8 @@ public class JGivenReport {
         return Collections.unmodifiableList(testClasses);
     }
 
+    public Stream<JGivenTag> tags(Predicate<JGivenTag> condition) {
+        return tagsByTagId.values().stream().filter(condition);
+    }
+
 }

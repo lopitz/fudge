@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.stream.Stream;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import de.opitz.poc.featuredoc.jgiven.dto.JGivenReport;
@@ -18,8 +18,12 @@ public class JGivenJsonParser {
     private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new Jdk8Module());
 
     public JGivenReport parseReportFiles(URL... urls) {
-        return Arrays
-            .stream(urls)
+        return parseReportFiles(Arrays.stream(urls));
+    }
+
+    public JGivenReport parseReportFiles(Stream<URL> urls) {
+        return urls
+            .parallel()
             .map(this::loadReport)
             .filter(Objects::nonNull)
             .reduce(JGivenReport.empty(), JGivenReport::withTestClass, JGivenReport::join);
