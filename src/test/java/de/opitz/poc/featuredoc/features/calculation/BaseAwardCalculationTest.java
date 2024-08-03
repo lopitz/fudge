@@ -1,4 +1,4 @@
-package de.opitz.poc.featuredoc.features.limit;
+package de.opitz.poc.featuredoc.features.calculation;
 
 import com.tngtech.jgiven.integration.spring.junit5.SpringScenarioTest;
 import de.opitz.poc.featuredoc.TestConfiguration;
@@ -6,10 +6,12 @@ import de.opitz.poc.featuredoc.jgiven.external.annotations.Feature;
 import de.opitz.poc.featuredoc.jgiven.external.annotations.Story;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @Feature(
-    value = "yearly limit",
+    value = "base award calculation",
     description = """
         This is just a description in Markdown syntax.
 
@@ -85,16 +87,15 @@ import org.springframework.boot.test.context.SpringBootTest;
         ```
         """)
 @SpringBootTest(classes = TestConfiguration.class)
-@SuppressWarnings("java:S2699") // lopitz: Assertions are handled via the Then stage and the then() keyword
-class LimitTest extends SpringScenarioTest<GivenCompleteSystemStage, WhenLimitStage, ThenLimitStage> {
+class BaseAwardCalculationTest extends SpringScenarioTest<GivenCompleteSystemStage, WhenLimitStage, ThenAwardCalculationStage> {
 
     @Test
-    @DisplayName("Provides a welcome page")
-    @Story({"JUSTDE-2311", "JUSTDE-2412"})
-    void providesAWelcomePage() {
+    @DisplayName("calculates the base points")
+    @Story({"JUSTDE-1123", "JUSTDE-1224"})
+    void calculateBasePoints() {
         given()
             .an_anonymous_user().and()
-            .a_configured_site_$_on_$("Germany", "mWeb");
+            .events_resulting_in_awards(new EventWithAward("purchase", 100), new EventWithAward("sale", 50), new EventWithAward("sharing on social media", 10));
 
         when()
             .requesting_the_welcome_page();
@@ -103,19 +104,23 @@ class LimitTest extends SpringScenarioTest<GivenCompleteSystemStage, WhenLimitSt
             .the_german_welcome_page_is_returned();
     }
 
-    @Test
-    @DisplayName("Different story")
-    @Story({"JUSTDE-1011"})
-    void a_different_story() {
+    @DisplayName("calculates a lot of base points")
+    @Story({"JUSTDE-1123", "JUSTDE-1224"})
+    @ParameterizedTest
+    @CsvSource({
+        "purchase 1, 150",
+        "sale 1, 50",
+        "sharing on social media 1, 10"
+    })
+    void calculateALotOfBasePoints(String name, int award) {
         given()
             .an_anonymous_user().and()
-            .a_configured_site_$_on_$("Germany", "mWeb");
+            .an_event(name);
 
         when()
             .requesting_the_welcome_page();
 
         then()
-            .the_german_welcome_page_is_returned();
+            .the_award_accrued_is(award);
     }
-
 }

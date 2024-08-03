@@ -188,18 +188,45 @@
               "parentFailed": false
             },
             {
-              "name": "the german welcome page is returned",
+              "name": "events resulting in awards",
               "words": [
                 {
-                  "value": "Then",
+                  "value": "and",
                   "isIntroWord": true
                 },
                 {
-                  "value": "the german welcome page is returned"
+                  "value": "events resulting in awards"
+                },
+                {
+                  "value": "EventWithAward[name\u003dpurchase, amount\u003d100], EventWithAward[name\u003dsale, amount\u003d50], EventWithAward[name\u003dsharing on social media, amount\u003d10]",
+                  "argumentInfo": {
+                    "argumentName": "eventWithAwards",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "name",
+                          "amount"
+                        ],
+                        [
+                          "purchase",
+                          "100"
+                        ],
+                        [
+                          "sale",
+                          "50"
+                        ],
+                        [
+                          "sharing on social media",
+                          "10"
+                        ]
+                      ]
+                    }
+                  }
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 16334,
+              "durationInNanos": 4206916,
               "depth": 0,
               "parentFailed": false
             }

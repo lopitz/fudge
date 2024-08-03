@@ -26,21 +26,54 @@
 **Given**
 
 {{#givenLines}}
-&nbsp;&nbsp;&nbsp;&nbsp;{{{.}}}
+&nbsp;&nbsp;&nbsp;&nbsp;
+{{#value}}
+{{#wordGroup}}{{{.}}}{{/wordGroup}}{{#parameter}}**&lt;{{{.}}}&gt;**{{/parameter}}
+{{/value}}
+{{#table}}
+
+| {{#header}} {{{.}}} | {{/header}}
+|{{#header}}-|{{/header}}
+{{#rows}}
+| {{#columns}} {{{.}}} | {{/columns}}
+{{/rows}}
+{{/table}}
 
 {{/givenLines}}
 
 **When**
 
 {{#whenLines}}
-&nbsp;&nbsp;&nbsp;&nbsp;{{{.}}}
+&nbsp;&nbsp;&nbsp;&nbsp;
+{{#value}}
+{{#wordGroup}}{{{.}}}{{/wordGroup}}{{#parameter}}**&lt;{{{.}}}&gt;**{{/parameter}}
+{{/value}}
+{{#table}}
+
+| {{#header}} {{{.}}} | {{/header}}
+|{{#header}}-|{{/header}}
+{{#rows}}
+| {{#columns}} {{{.}}} | {{/columns}}
+{{/rows}}
+{{/table}}
 
 {{/whenLines}}
 
 **Then**
 
 {{#thenLines}}
-&nbsp;&nbsp;&nbsp;&nbsp;{{{.}}}
+&nbsp;&nbsp;&nbsp;&nbsp;
+{{#value}}
+{{#wordGroup}}{{{.}}}{{/wordGroup}}{{#parameter}}**&lt;{{{.}}}&gt;**{{/parameter}}
+{{/value}}
+{{#table}}
+
+| {{#header}} {{{.}}} | {{/header}}
+|{{#header}}-|{{/header}}
+{{#rows}}
+| {{#columns}} {{{.}}} | {{/columns}}
+{{/rows}}
+{{/table}}
 
 {{/thenLines}}
 

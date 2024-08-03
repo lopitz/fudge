@@ -1,14 +1,27 @@
 package de.opitz.poc.featuredoc.generation;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import de.opitz.poc.featuredoc.generation.dto.DataTable;
+import de.opitz.poc.featuredoc.generation.dto.Line;
+import de.opitz.poc.featuredoc.generation.dto.LineElement;
+import de.opitz.poc.featuredoc.jgiven.TestIOUtils;
+import de.opitz.poc.featuredoc.jgiven.dto.JGivenDataTable;
 import de.opitz.poc.featuredoc.jgiven.dto.JGivenKeyword;
 import de.opitz.poc.featuredoc.jgiven.dto.JGivenKeywordArgumentInfo;
 import de.opitz.poc.featuredoc.jgiven.dto.JGivenScenarioCase;
 import de.opitz.poc.featuredoc.jgiven.dto.JGivenStep;
+import de.opitz.poc.featuredoc.jgiven.dto.JGivenTestClass;
+import lombok.SneakyThrows;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static de.opitz.poc.featuredoc.generation.dto.LineElement.parameter;
+import static de.opitz.poc.featuredoc.generation.dto.LineElement.wordGroup;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class WordsAnalyzerTest {
@@ -24,9 +37,19 @@ class WordsAnalyzerTest {
             new JGivenStep("a configured site $ on $", List.of(
                 new JGivenKeyword("and", true, null),
                 new JGivenKeyword("a configured site", false, null),
-                new JGivenKeyword("Germany", false, new JGivenKeywordArgumentInfo("siteName", "Germany")),
+                new JGivenKeyword("Germany", false, new JGivenKeywordArgumentInfo("siteName", null, "Germany", null)),
                 new JGivenKeyword("on", false, null),
-                new JGivenKeyword("mWeb", false, new JGivenKeywordArgumentInfo("platform", "mWeb"))
+                new JGivenKeyword("mWeb", false, null),
+                new JGivenKeyword("EventWithAward[name\u003dpurchase, amount\u003d100], EventWithAward[name\u003dsale, amount\u003d50], " +
+                    "EventWithAward[name\u003dsharing on social media, amount\u003d10]", false, new JGivenKeywordArgumentInfo("platform", null, "mWeb",
+                    JGivenDataTable
+                    .builder()
+                    .headerType("HORIZONTAL")
+                    .withRow("name", "amount")
+                    .withRow("purchase", "100")
+                    .withRow("sale", "50")
+                    .withRow("sharing on social media", "10")
+                    .build()))
             ), "PASSED", 2325666, 0, false),
             new JGivenStep("requesting the welcome page", List.of(
                 new JGivenKeyword("When", true, null),
@@ -40,9 +63,46 @@ class WordsAnalyzerTest {
 
         var wordsAnalyzer = WordsAnalyzer.analyze(scenarioCase);
 
-        assertThat(wordsAnalyzer.given()).containsExactly("an anonymous user", "and a configured site Germany on mWeb");
-        assertThat(wordsAnalyzer.when()).containsExactly("requesting the welcome page");
-        assertThat(wordsAnalyzer.then()).containsExactly("the German welcome page is returned");
+        SoftAssertions.assertSoftly(softly -> {
+            softly
+                .assertThat(wordsAnalyzer.given())
+                .map(Line::value)
+                .filteredOn(Objects::nonNull)
+                .map(l -> l.stream().map(LineElement::wordGroup).collect(Collectors.joining(" ")))
+                .containsExactly("an anonymous user", "and a configured site Germany on mWeb", "");
+            softly
+                .assertThat(wordsAnalyzer.when())
+                .map(Line::value)
+                .map(l -> l.stream().map(LineElement::wordGroup).collect(Collectors.joining(" ")))
+                .containsExactly("requesting the welcome page");
+            softly
+                .assertThat(wordsAnalyzer.then())
+                .map(Line::value)
+                .map(l -> l.stream().map(LineElement::wordGroup).collect(Collectors.joining(" ")))
+                .containsExactly("the German welcome page is returned");
+            softly.assertThat(wordsAnalyzer.given())
+                  .map(Line::table)
+                  .last()
+                  .isEqualTo(DataTable
+                      .builder()
+                      .withRow("name", "amount")
+                      .withRow("purchase", "100")
+                      .withRow("sale", "50")
+                      .withRow("sharing on social media", "10")
+                      .build());
+        });
     }
 
+    @SneakyThrows
+    @Test
+    @DisplayName("should use parameters in generated lines if derived/explicit arguments were used in the testcase")
+    void shouldUseParametersInGeneratedLinesIfDerivedExplicitArgumentsWereUsedInTheTestcase() {
+        var sourceText = TestIOUtils.loadTextFile("jgiven-report-with-parameters.json");
+        var jGivenTestClass = new ObjectMapper().readValue(sourceText, JGivenTestClass.class);
+        var jGivenScenario = jGivenTestClass.scenarios().getFirst();
+
+        var actual = WordsAnalyzer.analyze(jGivenScenario.scenarioCases().getFirst());
+
+        assertThat(actual.given()).flatMap(Line::value).containsExactly(wordGroup("an anonymous user"), wordGroup("and"), wordGroup("an event"), parameter("name"));
+    }
 }

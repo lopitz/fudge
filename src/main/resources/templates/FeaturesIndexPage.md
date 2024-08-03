@@ -2,6 +2,6 @@
 
 The following features were documented by Acceptance Tests.
 
-{{{#features}}}
+{{#features}}
 * [{{{name}}}]({{{targetPath}}}/{{{featureFolder}}}/index)
-{{{/features}}}
+{{/features}}
