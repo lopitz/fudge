@@ -13,7 +13,7 @@ import static java.util.function.Predicate.not;
 public class JiraLinkGenerator implements TagHrefGenerator {
 
     private static final String JIRA_BASE_URL_VARIABLE = "JIRA_BASE_URL";
-    private static final String JIRA_BASE_URL_PROPERTY = "jira.baseUrl";
+    private static final String JIRA_BASE_URL_PROPERTY = "jira.base.url";
     private static final String JIRA_URL = "%s/browse/%s";
 
     private final Map<String, String> environmentVariables;
@@ -29,12 +29,23 @@ public class JiraLinkGenerator implements TagHrefGenerator {
     @Override
     public String generateHref(TagConfiguration tagConfiguration, Annotation annotation, Object value) {
         if (value instanceof String issue) {
-            return
-                extractJiraBaseUrl(annotation)
-                    .map(this::removeTrailingForwardSlashes)
-                    .map(baseUrl -> JIRA_URL.formatted(baseUrl, issue))
-                    .orElse("");
+            return extractJiraBaseUrl(annotation)
+                .map(this::removeTrailingForwardSlashes)
+                .map(baseUrl -> JIRA_URL.formatted(baseUrl, issue))
+                .orElseGet(this::logMissingJiraConfiguration);
         }
+        return "";
+    }
+
+    private String logMissingJiraConfiguration() {
+        System.out.println("!!! JGiven report generation - information. !!!");
+        System.out.format("Neither the system property \"%s\" nor the environment variable \"%s\" was set.%n", JIRA_BASE_URL_PROPERTY,
+            JIRA_BASE_URL_VARIABLE);
+        System.out.format("Consider passing url as system property when starting the build. e.g for maven: mvn -D%s=https://jira.your.company" +
+                ".com%n",
+            JIRA_BASE_URL_PROPERTY);
+        System.out.println("No Jira links will be generated.");
+        System.out.println("!!! JGiven report generation - information end. !!!");
         return "";
     }
 

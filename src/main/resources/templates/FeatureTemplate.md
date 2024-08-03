@@ -5,15 +5,15 @@
 
 ## Epics
 
-{{{#epics}}}
+{{#epics}}
 - [{{{id}}}]({{{href}}})
-{{{/epics}}}
+{{/epics}}
 
 ## Stories
 
-{{{#stories}}}
+{{#stories}}
 - [{{{id}}}]({{{href}}})
-{{{/stories}}}
+{{/stories}}
 
 ## Behavior
 
@@ -76,6 +76,14 @@
 {{/table}}
 
 {{/thenLines}}
+
+{{#cases}}
+| case number | {{#parameterNames}} {{{.}}} |{{/parameterNames}}
+|-|{{#parameterNames}}-|{{/parameterNames}}
+{{#cases}}
+| {{number}} | {{#parameters}} {{{value}}} |{{/parameters}}
+{{/cases}}
+{{/cases}}
 
 {{/tests}}
 {{/scenarios}}

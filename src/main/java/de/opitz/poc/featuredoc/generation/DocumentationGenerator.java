@@ -18,9 +18,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.github.mustachejava.DefaultMustacheFactory;
+import de.opitz.poc.featuredoc.generation.dto.ConnectedIssue;
 import de.opitz.poc.featuredoc.generation.dto.Feature;
 import de.opitz.poc.featuredoc.generation.dto.Scenario;
 import de.opitz.poc.featuredoc.jgiven.JGivenJsonParser;
@@ -94,8 +96,19 @@ public class DocumentationGenerator {
     private List<Feature> buildFeatureDtos(List<JGivenTag> features, Map<String, String> folderMapping, JGivenReport report) {
         return features
             .stream()
-            .map(tag -> new Feature(tag.value(), tag.description(), folderMapping.get(tag.value()), buildScenarios(tag, report)))
+            .map(featureTag -> buildFeature(folderMapping, report, featureTag))
             .toList();
+    }
+
+    private Feature buildFeature(Map<String, String> folderMapping, JGivenReport report, JGivenTag featureTag) {
+        var scenarios = buildScenarios(featureTag, report);
+        var epics = getConnectedIssues(scenarios, Scenario::epics);
+        var stories = getConnectedIssues(scenarios, Scenario::stories);
+        return new Feature(featureTag.value(), featureTag.description(), folderMapping.get(featureTag.value()), scenarios, epics, stories);
+    }
+
+    private static List<ConnectedIssue> getConnectedIssues(List<Scenario> scenarios, Function<Scenario, List<ConnectedIssue>> propertyExtractor) {
+        return scenarios.stream().map(propertyExtractor).flatMap(Collection::stream).distinct().sorted(Comparator.comparing(ConnectedIssue::id)).toList();
     }
 
     private List<Scenario> buildScenarios(JGivenTag tag, JGivenReport report) {

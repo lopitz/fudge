@@ -1,4 +1,6 @@
 package de.opitz.poc.featuredoc.jgiven.dto;
 
-public record JGivenKeyword(String value, boolean isIntroWord, JGivenKeywordArgumentInfo argumentInfo) {
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public record JGivenKeyword(String value, @JsonProperty("isIntroWord") boolean introWord, JGivenKeywordArgumentInfo argumentInfo) {
 }

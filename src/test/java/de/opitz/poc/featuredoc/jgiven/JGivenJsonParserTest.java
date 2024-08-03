@@ -1,5 +1,8 @@
 package de.opitz.poc.featuredoc.jgiven;
 
+import de.opitz.poc.featuredoc.jgiven.dto.JGivenScenario;
+import de.opitz.poc.featuredoc.jgiven.dto.JGivenTag;
+import de.opitz.poc.featuredoc.jgiven.dto.JGivenTestClass;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -17,6 +20,12 @@ class JGivenJsonParserTest {
         assertThat(actual.testClasses().getFirst().scenarios().getFirst().scenarioCases().getFirst().steps().get(1).words())
             .extracting("value")
             .containsExactly("and", "a configured site", "Germany", "on", "mWeb");
+        assertThat(actual.testClasses())
+            .flatMap(JGivenTestClass::scenarios)
+            .filteredOn("testMethodName", "providesAWelcomePage")
+            .flatMap(JGivenScenario::tags)
+            .map(JGivenTag::type)
+            .containsExactly("Feature", "Story", "Story");
     }
 
 }

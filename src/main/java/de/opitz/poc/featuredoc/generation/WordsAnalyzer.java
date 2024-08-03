@@ -67,7 +67,7 @@ public class WordsAnalyzer {
     }
 
     private void determineCurrentGherkinWordList(JGivenKeyword keyword) {
-        if (keyword.isIntroWord()) {
+        if (keyword.introWord()) {
             finishLine();
             currentWordList = switch (keyword.value()) {
                 case "Given" -> {

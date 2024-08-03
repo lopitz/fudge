@@ -15,7 +15,7 @@ class JiraLinkGeneratorTest {
     @Test
     @DisplayName("should generate jira link with given jira base url in story annotation")
     void shouldGenerateJiraLinkWithGivenJiraBaseUrlInStoryAnnotation() {
-        System.clearProperty("jira.baseUrl");
+        System.clearProperty("jira.base.url");
         var jiraLinkGenerator = new JiraLinkGenerator();
         var actual = jiraLinkGenerator.generateHref(null, getStoryAnnotationWithBaseUrl(), "JIRA-123");
 
@@ -25,7 +25,7 @@ class JiraLinkGeneratorTest {
     @Test
     @DisplayName("should generate jira link with given jira base url in environment variable")
     void shouldGenerateJiraLinkWithGivenJiraBaseUrlInEnvironmentVariable() {
-        System.clearProperty("jira.baseUrl");
+        System.clearProperty("jira.base.url");
         var jiraLinkGenerator = new JiraLinkGenerator(Map.of("JIRA_BASE_URL", "https://jira.dev"));
         var actual = jiraLinkGenerator.generateHref(null, getStoryAnnotationWithoutBaseUrl(), "JIRA-123");
 
@@ -36,20 +36,20 @@ class JiraLinkGeneratorTest {
     @DisplayName("should generate jira link if jira base url is given in system property")
     void shouldGenerateJiraLinkIfJiraBaseUrlIsGivenInSystemProperty() {
         try {
-            System.setProperty("jira.baseUrl", "https://jira.dev/");
+            System.setProperty("jira.base.url", "https://jira.dev/");
             var jiraLinkGenerator = new JiraLinkGenerator();
             var actual = jiraLinkGenerator.generateHref(null, getStoryAnnotationWithoutBaseUrl(), "JIRA-123");
 
             assertThat(actual).isEqualTo("https://jira.dev/browse/JIRA-123");
         } finally {
-            System.clearProperty("jira.baseUrl");
+            System.clearProperty("jira.base.url");
         }
     }
 
     @Test
     @DisplayName("should handle not given jira base url gracefully and simply not creating a link")
     void shouldHandleNotGivenJiraBaseUrlGracefullyAndSimplyNotCreatingALink() {
-        System.clearProperty("jira.baseUrl");
+        System.clearProperty("jira.base.url");
         var jiraLinkGenerator = new JiraLinkGenerator();
         var actual = jiraLinkGenerator.generateHref(null, getStoryAnnotationWithoutBaseUrl(), "JIRA-123");
 
@@ -60,13 +60,13 @@ class JiraLinkGeneratorTest {
     @DisplayName("should prefer system property over story annotation and system variable for jira base url")
     void shouldPreferSystemPropertyOverStoryAnnotationAndSystemVariableForJiraBaseUrl() {
         try {
-            System.setProperty("jira.baseUrl", "https://jira.correct/");
+            System.setProperty("jira.base.url", "https://jira.correct/");
             var jiraLinkGenerator = new JiraLinkGenerator(Map.of("JIRA_BASE_URL", "https://jira.wrong"));
             var actual = jiraLinkGenerator.generateHref(null, getStoryAnnotationWithBaseUrl(), "JIRA-123");
 
             assertThat(actual).isEqualTo("https://jira.correct/browse/JIRA-123");
         } finally {
-            System.clearProperty("jira.baseUrl");
+            System.clearProperty("jira.base.url");
         }
     }
 

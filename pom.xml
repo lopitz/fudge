@@ -31,6 +31,7 @@
         <spring-modulith.version>1.2.1</spring-modulith.version>
         <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
         <lombok.version>1.18.32</lombok.version>
+        <jira.base.url>https://jira.dev</jira.base.url>
     </properties>
     <dependencies>
         <dependency>
@@ -182,6 +183,11 @@
                             <version>${lombok.version}</version>
                         </path>
                     </annotationProcessorPaths>
+                    <compilerArgs>
+                        <arg>
+                            -Amapstruct.unmappedTargetPolicy=ERROR
+                        </arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
             <plugin>

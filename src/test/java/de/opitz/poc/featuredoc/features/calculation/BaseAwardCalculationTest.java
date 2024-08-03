@@ -91,7 +91,7 @@ class BaseAwardCalculationTest extends SpringScenarioTest<GivenCompleteSystemSta
 
     @Test
     @DisplayName("calculates the base points")
-    @Story({"JUSTDE-1123", "JUSTDE-1224"})
+    @Story({"FEATUREDOCS-1123", "FEATUREDOCS-1224"})
     void calculateBasePoints() {
         given()
             .an_anonymous_user().and()
@@ -105,7 +105,7 @@ class BaseAwardCalculationTest extends SpringScenarioTest<GivenCompleteSystemSta
     }
 
     @DisplayName("calculates a lot of base points")
-    @Story({"JUSTDE-1123", "JUSTDE-1224"})
+    @Story({"FEATUREDOCS-1123", "FEATUREDOCS-1224"})
     @ParameterizedTest
     @CsvSource({
         "purchase 1, 150",

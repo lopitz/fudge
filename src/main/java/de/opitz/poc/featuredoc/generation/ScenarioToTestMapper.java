@@ -1,18 +1,22 @@
 package de.opitz.poc.featuredoc.generation;
 
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import de.opitz.poc.featuredoc.generation.dto.Case;
 import de.opitz.poc.featuredoc.generation.dto.Cases;
+import de.opitz.poc.featuredoc.generation.dto.ConnectedIssue;
 import de.opitz.poc.featuredoc.generation.dto.Parameter;
 import de.opitz.poc.featuredoc.generation.dto.Scenario;
 import de.opitz.poc.featuredoc.generation.dto.Test;
 import de.opitz.poc.featuredoc.jgiven.dto.JGivenKeyword;
 import de.opitz.poc.featuredoc.jgiven.dto.JGivenScenario;
 import de.opitz.poc.featuredoc.jgiven.dto.JGivenScenarioCase;
+import de.opitz.poc.featuredoc.jgiven.dto.JGivenTag;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -23,10 +27,37 @@ public interface ScenarioToTestMapper {
     @Mapping(target = "tests", source = "scenarioCases")
     @Mapping(target = "index", expression = "java(counter.next())")
     default Scenario map(JGivenScenario scenario, @Context Iterator<Integer> counter) {
+        var epics = findEpics(scenario);
+        var stories = findStories(scenario);
         if (scenario.casesAsTable()) {
-            return new Scenario(counter.next(), scenario.description(), List.of(map(scenario.scenarioCases().getFirst())), mapCases(scenario));
+            return new Scenario(
+                counter.next(),
+                scenario.description(),
+                List.of(map(scenario.scenarioCases().getFirst())),
+                mapCases(scenario),
+                epics,
+                stories);
         }
-        return new Scenario(counter.next(), scenario.description(), scenario.scenarioCases().stream().map(this::map).toList(), null);
+        return new Scenario(counter.next(), scenario.description(), scenario.scenarioCases().stream().map(this::map).toList(), null, epics, stories);
+    }
+
+    default List<ConnectedIssue> findEpics(JGivenScenario scenario) {
+        return getUniqueTagValuesSorted(scenario, jGivenTag -> Objects.equals(jGivenTag.type(), "Epic"));
+    }
+
+    default List<ConnectedIssue> findStories(JGivenScenario scenario) {
+        return getUniqueTagValuesSorted(scenario, jGivenTag -> Objects.equals(jGivenTag.type(), "Story"));
+    }
+
+    private static List<ConnectedIssue> getUniqueTagValuesSorted(JGivenScenario scenario, Predicate<JGivenTag> condition) {
+        return Objects
+            .requireNonNullElse(scenario.tags(), List.<JGivenTag>of())
+            .stream()
+            .filter(condition)
+            .map(tag -> new ConnectedIssue(tag.value(), tag.href()))
+            .distinct()
+            .sorted(Comparator.comparing(ConnectedIssue::id))
+            .toList();
     }
 
     default Test map(JGivenScenarioCase source) {

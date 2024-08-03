@@ -3,12 +3,15 @@ package de.opitz.poc.featuredoc.jgiven;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import de.opitz.poc.featuredoc.jgiven.dto.JGivenReport;
+import de.opitz.poc.featuredoc.jgiven.dto.JGivenScenario;
+import de.opitz.poc.featuredoc.jgiven.dto.JGivenTag;
 import de.opitz.poc.featuredoc.jgiven.dto.JGivenTestClass;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,7 +29,22 @@ public class JGivenJsonParser {
             .parallel()
             .map(this::loadReport)
             .filter(Objects::nonNull)
+            .map(this::enrichScenariosWithTags)
             .reduce(JGivenReport.empty(), JGivenReport::withTestClass, JGivenReport::join);
+    }
+
+    private JGivenTestClass enrichScenariosWithTags(JGivenTestClass testClass) {
+        var enrichedScenarios = testClass
+            .scenarios()
+            .stream()
+            .map(oldScenario -> enrichScenarioWithTags(oldScenario, testClass.tagMap()))
+            .toList();
+        return testClass.withScenarios(enrichedScenarios);
+    }
+
+    private JGivenScenario enrichScenarioWithTags(JGivenScenario oldScenario, Map<String, JGivenTag> tagMap) {
+        var newTags = oldScenario.tagIds().stream().map(tagMap::get).toList();
+        return oldScenario.withTags(newTags);
     }
 
     private JGivenTestClass loadReport(URL url) {

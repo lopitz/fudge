@@ -90,7 +90,7 @@ class LimitTest extends SpringScenarioTest<GivenCompleteSystemStage, WhenLimitSt
 
     @Test
     @DisplayName("Provides a welcome page")
-    @Story({"JUSTDE-2311", "JUSTDE-2412"})
+    @Story({"FEATUREDOCS-2311", "FEATUREDOCS-2412"})
     void providesAWelcomePage() {
         given()
             .an_anonymous_user().and()
@@ -105,7 +105,7 @@ class LimitTest extends SpringScenarioTest<GivenCompleteSystemStage, WhenLimitSt
 
     @Test
     @DisplayName("Different story")
-    @Story({"JUSTDE-1011"})
+    @Story({"FEATUREDOCS-1011"})
     void a_different_story() {
         given()
             .an_anonymous_user().and()

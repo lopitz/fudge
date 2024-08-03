@@ -20,7 +20,7 @@ class JGivenReportTest {
     @Test
     @DisplayName("should handle tags properly")
     void shouldHandleTagsProperly() {
-        assertThat(report.filterByTag("Story", "JUSTDE-2311"))
+        assertThat(report.filterByTag("Story", "FEATUREDOCS-2311"))
             .singleElement()
             .hasFieldOrPropertyWithValue("testMethodName", "providesAWelcomePage");
     }
