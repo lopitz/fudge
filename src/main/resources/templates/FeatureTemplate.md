@@ -1,57 +1,48 @@
 {{#feature}}
-# {{name}}
+# {{{name}}}
 
-{{description}}
+{{{description}}}
 
 ## Epics
 
-not available yet, as JGiven doesn't allow to generate custom elements in the JSON report.
+{{{#epics}}}
+- [{{{id}}}]({{{href}}})
+{{{/epics}}}
 
-{{#epics}}
-- [id](href)
-{{/epics}}
- 
 ## Stories
 
-not available yet, as JGiven doesn't allow to generate custom elements in the JSON report.
-
-{{#stories}}
-- [id](href)
-{{/stories}}
+{{{#stories}}}
+- [{{{id}}}]({{{href}}})
+{{{/stories}}}
 
 ## Behavior
 
 {{#scenarios}}
 
-**Description:**
-
-{{description}}
+### {{index}}. {{{description}}}
 
 {{#tests}}
 
 **Given**
 
-&nbsp;&nbsp;&nbsp;&nbsp;{{#givenLines}}
+{{#givenLines}}
+&nbsp;&nbsp;&nbsp;&nbsp;{{{.}}}
 
-&nbsp;&nbsp;&nbsp;&nbsp;{{.}}
-
-&nbsp;&nbsp;&nbsp;&nbsp;{{/givenLines}}
-
-**When**
-
-&nbsp;&nbsp;&nbsp;&nbsp;{{#whenLines}}
-
-&nbsp;&nbsp;&nbsp;&nbsp;{{.}}
-
-&nbsp;&nbsp;&nbsp;&nbsp;{{/whenLines}}
+{{/givenLines}}
 
 **When**
 
-&nbsp;&nbsp;&nbsp;&nbsp;{{#thenLines}}
+{{#whenLines}}
+&nbsp;&nbsp;&nbsp;&nbsp;{{{.}}}
 
-&nbsp;&nbsp;&nbsp;&nbsp;{{.}}
+{{/whenLines}}
 
-&nbsp;&nbsp;&nbsp;&nbsp;{{/thenLines}}
+**Then**
+
+{{#thenLines}}
+&nbsp;&nbsp;&nbsp;&nbsp;{{{.}}}
+
+{{/thenLines}}
 
 {{/tests}}
 {{/scenarios}}

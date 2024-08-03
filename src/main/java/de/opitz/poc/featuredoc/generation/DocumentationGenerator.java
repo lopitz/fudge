@@ -99,11 +99,12 @@ public class DocumentationGenerator {
     }
 
     private List<Scenario> buildScenarios(JGivenTag tag, JGivenReport report) {
+        var idGenerator = IdGenerator.ofInt(1);
         return report
             .testClasses(test -> test.tagMap().containsValue(tag))
             .map(JGivenTestClass::scenarios)
             .flatMap(Collection::stream)
-            .map(scenarioMapper::map)
+            .map(jGivenScenario -> scenarioMapper.map(jGivenScenario, idGenerator.iterator()))
             .toList();
     }
 
