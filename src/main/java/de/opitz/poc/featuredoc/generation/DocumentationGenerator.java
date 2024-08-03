@@ -166,9 +166,7 @@ public class DocumentationGenerator {
     ) {
         try (var templateReader = new InputStreamReader(featuresIndexTemplate)) {
             var mustache = mustacheFactory.compile(templateReader, "features-index");
-            var variables = Map.of(
-                "targetPath", targetRootPath.toString(),
-                "features", features);
+            var variables = Map.of("features", features);
             var writer = new StringWriter();
             mustache.execute(writer, variables);
             Files.writeString(fileSystem.getPath(targetRootPath.toString(), "index.md"), writer.toString());

@@ -3,5 +3,5 @@
 The following features were documented by Acceptance Tests.
 
 {{#features}}
-* [{{{name}}}]({{{targetPath}}}/{{{featureFolder}}}/index)
+* [{{{name}}}](./{{encodedFeatureFolder}}/index.md)
 {{/features}}
