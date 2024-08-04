@@ -1,14 +1,12 @@
 package de.opitz.poc.featuredoc.features.calculation;
 
-import com.tngtech.jgiven.integration.spring.junit5.SpringScenarioTest;
-import de.opitz.poc.featuredoc.TestConfiguration;
+import com.tngtech.jgiven.junit.ScenarioTest;
 import de.opitz.poc.featuredoc.jgiven.external.annotations.Feature;
 import de.opitz.poc.featuredoc.jgiven.external.annotations.Story;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.springframework.boot.test.context.SpringBootTest;
 
 @Feature(
     value = "base award calculation",
@@ -86,8 +84,7 @@ import org.springframework.boot.test.context.SpringBootTest;
         )
         ```
         """)
-@SpringBootTest(classes = TestConfiguration.class)
-class BaseAwardCalculationTest extends SpringScenarioTest<GivenCompleteSystemStage, WhenLimitStage, ThenAwardCalculationStage> {
+class BaseAwardCalculationTest extends ScenarioTest<GivenCompleteSystemStage, WhenLimitStage, ThenAwardCalculationStage> {
 
     @Test
     @DisplayName("calculates the base points")
