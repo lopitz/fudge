@@ -17,10 +17,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.github.mustachejava.DefaultMustacheFactory;
+import com.github.mustachejava.Mustache;
+import com.github.mustachejava.MustacheFactory;
 import de.opitz.poc.featuredoc.generation.dto.ConnectedIssue;
 import de.opitz.poc.featuredoc.generation.dto.Feature;
 import de.opitz.poc.featuredoc.generation.dto.Scenario;
@@ -39,6 +42,7 @@ public class DocumentationGenerator {
     private final FileSystem fileSystem;
     private final ScenarioToTestMapper scenarioMapper = Mappers.getMapper(ScenarioToTestMapper.class);
     private final FolderCreator folderCreator;
+    private final MustacheFactory mustacheFactory = new DefaultMustacheFactory();
 
     public DocumentationGenerator(JGivenJsonParser jgivenParser) {
         this(jgivenParser, FileSystems.getDefault());
@@ -54,7 +58,6 @@ public class DocumentationGenerator {
         var rootTargetPath = Optional.ofNullable(documentationParameters.targetPath()).orElse(fileSystem.getPath("target", "feature-documentation"));
         var sourcePath = Optional.ofNullable(documentationParameters.sourceRootPath()).orElse(fileSystem.getPath("target", "jgiven-reports"));
         var target = Files.createDirectories(rootTargetPath);
-        var mustacheFactory = new DefaultMustacheFactory();
         try (var reportUrls = Files
             .find(sourcePath, 5, (path, attributes) -> path
                 .toString()
@@ -66,8 +69,8 @@ public class DocumentationGenerator {
             var features = report.tags(feature -> Objects.equals(feature.type(), "Feature")).distinct().sorted(Comparator.comparing(JGivenTag::value)).toList();
             var folderMapping = buildFeaturePathStructure(features, target);
             var featureDtos = buildFeatureDtos(features, folderMapping, report);
-            buildFeatureIndex(featureDtos, mustacheFactory, target, findFeaturesIndexTemplate(documentationParameters));
-            buildFeatures(featureDtos, mustacheFactory, findFeatureTemplate(documentationParameters));
+            buildFeatureIndex(featureDtos, target, findFeaturesIndexTemplate(documentationParameters));
+            buildFeatures(featureDtos, findFeatureTemplate(documentationParameters), documentationParameters);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -128,38 +131,71 @@ public class DocumentationGenerator {
 
     private void buildFeatureIndex(
         List<Feature> features,
-        DefaultMustacheFactory mustacheFactory,
         Path targetRootPath,
         InputStream featuresIndexTemplate
     ) {
-        try (var templateReader = new InputStreamReader(featuresIndexTemplate)) {
+        var variables = Map.<String, Object>of("features", features);
+        var resultPath = fileSystem.getPath(targetRootPath.toString(), "index.md");
+        generateTargetFileWithTemplateEngine(featuresIndexTemplate, variables, resultPath);
+    }
+
+    private void generateTargetFileWithTemplateEngine(InputStream template, Map<String, Object> variables, Path resultPath) {
+        try (var templateReader = new InputStreamReader(template)) {
             var mustache = mustacheFactory.compile(templateReader, "features-index");
-            var variables = Map.of("features", features);
             var writer = new StringWriter();
             mustache.execute(writer, variables);
-            Files.writeString(fileSystem.getPath(targetRootPath.toString(), "index.md"), writer.toString());
+            Files.writeString(resultPath, writer.toString());
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
 
-    private void buildFeatures(List<Feature> featureDtos, DefaultMustacheFactory mustacheFactory, InputStream featureTemplate) {
+    private void buildFeatures(List<Feature> featureDtos, InputStream featureTemplate, DocumentationParameters documentationParameters) {
         try (var templateReader = new InputStreamReader(featureTemplate)) {
             var mustache = mustacheFactory.compile(templateReader, "features-index");
-            featureDtos.forEach(feature -> {
-                var variables = Map.of("feature", feature);
-                var writer = new StringWriter();
-                mustache.execute(writer, variables);
-                var targetFilePath = fileSystem.getPath(feature.featureFolder(), "index.md");
-                try {
-                    Files.writeString(targetFilePath, writer.toString());
-                } catch (IOException e) {
-                    log.error("Error writing documentation page for feature {} to {}", feature.name(), targetFilePath, e);
-                }
-            });
+            featureDtos.forEach(feature -> buildFeature(feature, mustache, documentationParameters));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    private void buildFeature(Feature feature, Mustache mustache, DocumentationParameters documentationParameters) {
+        var enrichedScenarios = feature
+            .scenarios()
+            .stream()
+            .map(scenario -> generateFileName(scenario, feature.featureFolder(), feature))
+            .map(scenarioAndFileName -> buildScenarioFile(scenarioAndFileName, documentationParameters))
+            .map(scenarioAndFileName -> scenarioAndFileName.scenario().withFileName(scenarioAndFileName.fileName()))
+            .toList();
+        var variables = Map.of("feature", feature.withScenarios(enrichedScenarios));
+        var writer = new StringWriter();
+        mustache.execute(writer, variables);
+        var targetFilePath = fileSystem.getPath(feature.featureFolder(), "index.md");
+        try {
+            Files.writeString(targetFilePath, writer.toString());
+        } catch (IOException e) {
+            log.error("Error writing documentation page for feature {} to {}", feature.name(), targetFilePath, e);
+        }
+    }
+
+    private ScenarioAndFileName generateFileName(Scenario scenario, String parentPath, Feature feature) {
+        var fileName = "%s.md".formatted(UUID.randomUUID().toString());
+        return new ScenarioAndFileName(feature, scenario, fileName, fileSystem.getPath(parentPath, fileName));
+    }
+
+    private ScenarioAndFileName buildScenarioFile(ScenarioAndFileName scenarioAndFileName, DocumentationParameters documentationParameters) {
+        try {
+            var variables = Map.of(
+                "featureName", scenarioAndFileName.feature().name(),
+                "scenario", scenarioAndFileName.scenario()
+            );
+            generateTargetFileWithTemplateEngine(openTemplate(documentationParameters.scenarioTemplate(), "templates/ScenarioTemplate.md"), variables,
+                scenarioAndFileName.filePath());
+        } catch (IOException e) {
+            log.error("Error writing documentation page for scenario {} to file {}", scenarioAndFileName.feature().name(), scenarioAndFileName.fileName(), e);
+
+        }
+        return scenarioAndFileName;
     }
 
     private static URL mapToUrl(URI uri) {
@@ -168,5 +204,8 @@ public class DocumentationGenerator {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    private record ScenarioAndFileName(Feature feature, Scenario scenario, String fileName, Path filePath) {
     }
 }

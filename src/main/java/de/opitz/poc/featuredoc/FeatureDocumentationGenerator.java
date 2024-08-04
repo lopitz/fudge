@@ -38,7 +38,7 @@ public class FeatureDocumentationGenerator {
                 .filter(e -> Objects.isNull(e.error()))
                 .map(ConstructorAndError::constructor)
                 .filter(Objects::nonNull)
-                .map(constructor  -> createInstance(constructor, consoleWriter))
+                .map(constructor -> createInstance(constructor, consoleWriter))
                 .sorted(Comparator.comparing(OptionHandler::priority).reversed())
                 .reduce(ProgramConfiguration.empty(), (currentConfig, element) -> callOptionHandler(currentConfig, element, line), (_, right) -> right);
 
@@ -46,7 +46,7 @@ public class FeatureDocumentationGenerator {
                 return;
             }
             var generator = new DocumentationGenerator(new JGivenJsonParser());
-            generator.generateDocumentation(new DocumentationParameters(config.source(), config.target(), null, null));
+            generator.generateDocumentation(new DocumentationParameters(config.source(), config.target(), null, null, null));
         } catch (ParseException exp) {
             log.error("Parsing failed.  Reason: {}", exp.getMessage(), exp);
         } catch (Exception e) {
@@ -64,7 +64,9 @@ public class FeatureDocumentationGenerator {
         }
         var result = element.handleCommandLine(line, currentConfig);
         if (result == null) {
-            log.error("The option handler {} returned null instead of a new program configuration. Using the default value for the option.", element.getClass().getName());
+            log.error("The option handler {} returned null instead of a new program configuration. Using the default value for the option.", element
+                .getClass()
+                .getName());
             return currentConfig;
         }
         return result;
@@ -82,11 +84,13 @@ public class FeatureDocumentationGenerator {
             var constructor = aClass.getConstructor(ConsoleWriter.class);
             return new ConstructorAndError<>(aClass, constructor, null);
         } catch (NoSuchMethodException e) {
-            return new ConstructorAndError<>(aClass, null, new IllegalArgumentException("The class %s does not define a constructor with a single argument (ConsoleWriter)".formatted(aClass.getName()), e));
+            return new ConstructorAndError<>(aClass, null, new IllegalArgumentException(("The class %s does not define a constructor with a single argument " +
+                "(ConsoleWriter)").formatted(aClass.getName()), e));
         } catch (Exception e) {
             return new ConstructorAndError<>(aClass, null, e);
         }
     }
+
     private static <T extends OptionHandler> T createInstance(Constructor<T> constructor, ConsoleWriter consoleWriter) {
         try {
             return constructor.newInstance(consoleWriter);

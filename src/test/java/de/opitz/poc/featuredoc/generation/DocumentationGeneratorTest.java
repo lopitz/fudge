@@ -22,7 +22,7 @@ class DocumentationGeneratorTest {
         var parser = new JGivenJsonParser();
         var fileSystem = prepareFileSystem();
         var generator = new DocumentationGenerator(parser, fileSystem);
-        generator.generateDocumentation(new DocumentationParameters(fileSystem.getPath("/target", "jgiven-reports"), null, null, null));
+        generator.generateDocumentation(new DocumentationParameters(fileSystem.getPath("/target", "jgiven-reports"), null, null, null, null));
 
         var result = Files.lines(fileSystem.getPath("target", "feature-documentation", "index.md")).collect(Collectors.joining("\n"));
         assertThat(result).isNotEmpty().contains("[yearly limit]");
@@ -36,7 +36,7 @@ class DocumentationGeneratorTest {
         var fileSystem = prepareFileSystem();
         var generator = new DocumentationGenerator(parser, fileSystem);
         generator.generateDocumentation(new DocumentationParameters(fileSystem.getPath("/target", "jgiven-reports"), null, "/templates/not-existing-template" +
-            ".md", null));
+            ".md", null, null));
 
         var result = Files.lines(fileSystem.getPath("target", "feature-documentation", "index.md")).collect(Collectors.joining("\n"));
         assertThat(result).isNotEmpty().contains("[yearly limit]");
@@ -50,7 +50,7 @@ class DocumentationGeneratorTest {
         var fileSystem = prepareFileSystem();
         var generator = new DocumentationGenerator(parser, fileSystem);
         generator.generateDocumentation(new DocumentationParameters(fileSystem.getPath("/target", "jgiven-reports"), null, "/templates/existing-template.md",
-            null));
+            null, null));
 
         var result = Files.lines(fileSystem.getPath("target", "feature-documentation", "index.md")).collect(Collectors.joining("\n"));
         assertThat(result).isNotEmpty().contains("existing template");
@@ -63,10 +63,10 @@ class DocumentationGeneratorTest {
         var parser = new JGivenJsonParser();
         var fileSystem = prepareFileSystem();
         var generator = new DocumentationGenerator(parser, fileSystem);
-        generator.generateDocumentation(new DocumentationParameters(fileSystem.getPath("/target", "jgiven-reports"), null, null, null));
+        generator.generateDocumentation(new DocumentationParameters(fileSystem.getPath("/target", "jgiven-reports"), null, null, null, null));
 
         var actual = Files.find(fileSystem.getPath("target", "feature-documentation", "yearly limit"), 1, (_, _) -> true).toList();
-        assertThat(actual).hasSize(2);
+        assertThat(actual).hasSize(4);
         var result = Files.lines(fileSystem.getPath("target", "feature-documentation", "yearly limit", "index.md")).collect(Collectors.joining("\n"));
         assertThat(result).contains("# yearly limit");
     }
