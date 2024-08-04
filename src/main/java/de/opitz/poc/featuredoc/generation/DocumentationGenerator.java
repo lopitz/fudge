@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -30,18 +29,16 @@ import de.opitz.poc.featuredoc.jgiven.dto.JGivenReport;
 import de.opitz.poc.featuredoc.jgiven.dto.JGivenTag;
 import de.opitz.poc.featuredoc.jgiven.dto.JGivenTestClass;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.mapstruct.factory.Mappers;
 
 @Slf4j
 public class DocumentationGenerator {
 
-    private static final String SPECIAL_FILESYSTEM_CHARACTERS = "[\\\\/?`'\"]";
-
     private final JGivenJsonParser jgivenParser;
     private final FileSystem fileSystem;
     private final ScenarioToTestMapper scenarioMapper = Mappers.getMapper(ScenarioToTestMapper.class);
+    private final FolderCreator folderCreator;
 
     public DocumentationGenerator(JGivenJsonParser jgivenParser) {
         this(jgivenParser, FileSystems.getDefault());
@@ -50,6 +47,7 @@ public class DocumentationGenerator {
     public DocumentationGenerator(JGivenJsonParser jgivenParser, FileSystem fileSystem) {
         this.jgivenParser = jgivenParser;
         this.fileSystem = fileSystem;
+        this.folderCreator = new FolderCreator(fileSystem);
     }
 
     public void generateDocumentation(DocumentationParameters documentationParameters) throws IOException {
@@ -69,7 +67,7 @@ public class DocumentationGenerator {
             var folderMapping = buildFeaturePathStructure(features, target);
             var featureDtos = buildFeatureDtos(features, folderMapping, report);
             buildFeatureIndex(featureDtos, mustacheFactory, target, findFeaturesIndexTemplate(documentationParameters));
-            buildFeatures(featureDtos, mustacheFactory, target, findFeatureTemplate(documentationParameters));
+            buildFeatures(featureDtos, mustacheFactory, findFeatureTemplate(documentationParameters));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -122,40 +120,10 @@ public class DocumentationGenerator {
     }
 
     private Map<String, String> buildFeaturePathStructure(List<JGivenTag> features, Path rootTargetPath) {
-        var result = features
+        return features
             .stream()
-            .map(feature -> Pair.of(feature.value(), buildFeatureFolderName(feature.value(), rootTargetPath)))
+            .map(feature -> Pair.of(feature.value(), folderCreator.createFolder(feature.value(), rootTargetPath).toString()))
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        result.values().forEach(folderName -> buildFeatureFolder(rootTargetPath, folderName));
-        return result;
-    }
-
-    private String buildFeatureFolderName(String featureName, Path rootTargetPath) {
-        var folderName = StringUtils.abbreviateMiddle(featureName.replaceAll(SPECIAL_FILESYSTEM_CHARACTERS, "_"), "...", 250);
-        if (createFolder(featureName, rootTargetPath, folderName)) {
-            return folderName;
-        }
-        var uuidBasedName = UUID.randomUUID().toString();
-        createFolder(featureName, rootTargetPath, uuidBasedName);
-        return uuidBasedName;
-    }
-
-    private boolean createFolder(String featureName, Path rootTargetPath, String folderName) {
-        try {
-            Files.createDirectories(fileSystem.getPath(rootTargetPath.toString(), folderName));
-            return true;
-        } catch (IOException e) {
-            log.warn("Error creating feature folder for feature {} using name {}", featureName, folderName, e);
-        }
-        return false;
-    }
-
-    private Path buildFeatureFolder(Path rootTargetPath, String folderName) {
-        try {
-            return Files.createDirectories(fileSystem.getPath(rootTargetPath.toString(), folderName));
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
     }
 
     private void buildFeatureIndex(
@@ -175,14 +143,14 @@ public class DocumentationGenerator {
         }
     }
 
-    private void buildFeatures(List<Feature> featureDtos, DefaultMustacheFactory mustacheFactory, Path target, InputStream featureTemplate) {
+    private void buildFeatures(List<Feature> featureDtos, DefaultMustacheFactory mustacheFactory, InputStream featureTemplate) {
         try (var templateReader = new InputStreamReader(featureTemplate)) {
             var mustache = mustacheFactory.compile(templateReader, "features-index");
             featureDtos.forEach(feature -> {
                 var variables = Map.of("feature", feature);
                 var writer = new StringWriter();
                 mustache.execute(writer, variables);
-                var targetFilePath = fileSystem.getPath(target.toString(), feature.featureFolder(), "index.md");
+                var targetFilePath = fileSystem.getPath(feature.featureFolder(), "index.md");
                 try {
                     Files.writeString(targetFilePath, writer.toString());
                 } catch (IOException e) {
