@@ -1,7 +1,5 @@
-# {{{featureName}}}
-
 {{#scenario}}
-## {{{index}}}. {{{description}}}
+# {{{index}}}. {{{description}}}
 
 connected epics: {{#epics}}[{{{id}}}]({{{href}}}) {{/epics}}
 

@@ -55,9 +55,9 @@ public class DocumentationGenerator {
     }
 
     public void generateDocumentation(DocumentationParameters documentationParameters) throws IOException {
-        var rootTargetPath = Optional.ofNullable(documentationParameters.targetPath()).orElse(fileSystem.getPath("target", "feature-documentation"));
+        var targetRootPath = Optional.ofNullable(documentationParameters.targetPath()).orElse(fileSystem.getPath("target", "feature-documentation"));
         var sourcePath = Optional.ofNullable(documentationParameters.sourceRootPath()).orElse(fileSystem.getPath("target", "jgiven-reports"));
-        var target = Files.createDirectories(rootTargetPath);
+        var target = Files.createDirectories(targetRootPath);
         try (var reportUrls = Files
             .find(sourcePath, 5, (path, attributes) -> path
                 .toString()
@@ -70,7 +70,7 @@ public class DocumentationGenerator {
             var folderMapping = buildFeaturePathStructure(features, target);
             var featureDtos = buildFeatureDtos(features, folderMapping, report);
             buildFeatureIndex(featureDtos, target, findFeaturesIndexTemplate(documentationParameters));
-            buildFeatures(featureDtos, findFeatureTemplate(documentationParameters), documentationParameters);
+            buildFeatures(featureDtos, findFeatureTemplate(documentationParameters), documentationParameters, targetRootPath);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -105,7 +105,8 @@ public class DocumentationGenerator {
         var scenarios = buildScenarios(featureTag, report);
         var epics = getConnectedIssues(scenarios, Scenario::epics);
         var stories = getConnectedIssues(scenarios, Scenario::stories);
-        return new Feature(featureTag.value(), featureTag.description(), folderMapping.get(featureTag.value()), scenarios, epics, stories);
+        var featurePath = folderMapping.get(featureTag.value());
+        return new Feature(featureTag.value(), featureTag.description(), featurePath, scenarios, epics, stories);
     }
 
     private static List<ConnectedIssue> getConnectedIssues(List<Scenario> scenarios, Function<Scenario, List<ConnectedIssue>> propertyExtractor) {
@@ -125,7 +126,7 @@ public class DocumentationGenerator {
     private Map<String, String> buildFeaturePathStructure(List<JGivenTag> features, Path rootTargetPath) {
         return features
             .stream()
-            .map(feature -> Pair.of(feature.value(), folderCreator.createFolder(feature.value(), rootTargetPath).toString()))
+            .map(feature -> Pair.of(feature.value(), rootTargetPath.relativize(folderCreator.createFolder(feature.value(), rootTargetPath)).toString()))
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
@@ -150,27 +151,27 @@ public class DocumentationGenerator {
         }
     }
 
-    private void buildFeatures(List<Feature> featureDtos, InputStream featureTemplate, DocumentationParameters documentationParameters) {
+    private void buildFeatures(List<Feature> featureDtos, InputStream featureTemplate, DocumentationParameters documentationParameters, Path targetRootPath) {
         try (var templateReader = new InputStreamReader(featureTemplate)) {
-            var mustache = mustacheFactory.compile(templateReader, "features-index");
-            featureDtos.forEach(feature -> buildFeature(feature, mustache, documentationParameters));
+            var mustache = mustacheFactory.compile(templateReader, "feature-index");
+            featureDtos.forEach(feature -> buildFeature(feature, mustache, documentationParameters, targetRootPath));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
 
-    private void buildFeature(Feature feature, Mustache mustache, DocumentationParameters documentationParameters) {
+    private void buildFeature(Feature feature, Mustache mustache, DocumentationParameters documentationParameters, Path targetRootPath) {
         var enrichedScenarios = feature
             .scenarios()
             .stream()
             .map(scenario -> generateFileName(scenario, feature.featureFolder(), feature))
-            .map(scenarioAndFileName -> buildScenarioFile(scenarioAndFileName, documentationParameters))
+            .map(scenarioAndFileName -> buildScenarioFile(scenarioAndFileName, documentationParameters, targetRootPath))
             .map(scenarioAndFileName -> scenarioAndFileName.scenario().withFileName(scenarioAndFileName.fileName()))
             .toList();
         var variables = Map.of("feature", feature.withScenarios(enrichedScenarios));
         var writer = new StringWriter();
         mustache.execute(writer, variables);
-        var targetFilePath = fileSystem.getPath(feature.featureFolder(), "index.md");
+        var targetFilePath = fileSystem.getPath(targetRootPath.toString(), feature.featureFolder(), "index.md");
         try {
             Files.writeString(targetFilePath, writer.toString());
         } catch (IOException e) {
@@ -183,17 +184,17 @@ public class DocumentationGenerator {
         return new ScenarioAndFileName(feature, scenario, fileName, fileSystem.getPath(parentPath, fileName));
     }
 
-    private ScenarioAndFileName buildScenarioFile(ScenarioAndFileName scenarioAndFileName, DocumentationParameters documentationParameters) {
+    private ScenarioAndFileName buildScenarioFile(ScenarioAndFileName scenarioAndFileName, DocumentationParameters documentationParameters,
+        Path targetRootPath) {
         try {
             var variables = Map.of(
                 "featureName", scenarioAndFileName.feature().name(),
                 "scenario", scenarioAndFileName.scenario()
             );
             generateTargetFileWithTemplateEngine(openTemplate(documentationParameters.scenarioTemplate(), "templates/ScenarioTemplate.md"), variables,
-                scenarioAndFileName.filePath());
+                fileSystem.getPath(targetRootPath.toString(), scenarioAndFileName.filePath().toString()));
         } catch (IOException e) {
             log.error("Error writing documentation page for scenario {} to file {}", scenarioAndFileName.feature().name(), scenarioAndFileName.fileName(), e);
-
         }
         return scenarioAndFileName;
     }
