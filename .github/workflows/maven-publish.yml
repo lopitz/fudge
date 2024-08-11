@@ -19,9 +19,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          ssh-key: ${{ secrets.SSH_PRIVATE_KEY_MANUAL }}
-          persist-credentials: true
 
       - name: set local github name
         run: |
