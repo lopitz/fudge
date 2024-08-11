@@ -15,7 +15,7 @@
         <dependency>
             <groupId>de.opitz.fudge</groupId>
             <artifactId>fudge-core</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
