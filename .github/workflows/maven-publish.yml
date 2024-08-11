@@ -19,6 +19,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          persist-credentials: true
 
       - name: set local github name
         run: |
@@ -39,7 +42,7 @@ jobs:
       - name: maven-settings-xml-action
         uses: whelk-io/maven-settings-xml-action@v4
         with:
-          servers: '[{ "id": "github", "privateKey": "${ secrets.SSH_PRIVATE_KEY_MANUAL }", "username": "${ github.actor }", "password": "${ secrets.SSH_PRIVATE_KEY_MANUAL }" }]'
+          servers: '[{ "id": "github", "privateKey": "${ secrets.SSH_PRIVATE_KEY }", "username": "${ github.actor }", "password": "${ secrets.SSH_PRIVATE_KEY }" }]'
 
       - name: Maven stats
         run: ./mvnw -version
