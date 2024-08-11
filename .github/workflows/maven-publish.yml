@@ -56,7 +56,7 @@ jobs:
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
-          github-token: ${{ secrets.TOKEN }}
+          github_token: ${{ secrets.TOKEN }}
 
       - name: create tag
         run: ./mvnw org.codehaus.mojo:exec-maven-plugin:1.6.0:exec -Dexec.executable="git" -Dexec.args='tag ${project.version}'
@@ -64,7 +64,7 @@ jobs:
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
-          github-token: ${{ secrets.TOKEN }}
+          github_token: ${{ secrets.TOKEN }}
           tags: true
 
       - name: Publish to GitHub Packages Apache Maven
