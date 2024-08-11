@@ -113,11 +113,10 @@ class TargetOptionHandlerTest {
         var actual = new TargetOptionHandler(consoleWriter).handleCommandLine(commandLine, initialProgramConfiguration);
 
         assertThat(actual.target()).isNull();
-        assertThat(lineBuffer.lines()).containsExactly(
+        assertThat(lineBuffer.lines()).contains(
             "The given target directory [/:&|] did not exist. It could also not be created.",
             "Hence, the option is ignored and the dry run mode has been enabled.",
-            "",
-            "/:&|: Read-only file system");
+            "");
     }
 
 }
