@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.opitz.fudge</groupId>
     <artifactId>fudge-parent</artifactId>
-    <version>0.0.4-SNAPSHOT</version>
+    <version>0.0.4</version>
     <name>feature-docs-from-acceptance-tests-generation</name>
     <description>
         Converts a JGiven JSON report into a series of markdown files, which can be used in a site generator like Docusaurus.
