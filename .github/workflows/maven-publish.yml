@@ -51,7 +51,7 @@ jobs:
         run: ./mvnw -B org.codehaus.mojo:build-helper-maven-plugin:3.0.0:parse-version versions:set versions:commit -DnewVersion='${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}'
 
       - name: Package
-        run: ./mvnw -B package
+        run: ./mvnw -B install
 
       - name: Commit files
         run: git commit -m "[ci skip] release version" -a
