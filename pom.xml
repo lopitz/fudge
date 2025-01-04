@@ -63,6 +63,9 @@
         <coverage.exclusions>**/dto/*</coverage.exclusions>
         <!-- code coverage properties - end -->
 
+        <!-- sonar configuration -->
+        <sonar.coverage.exclusions>${coverage.exclusions}</sonar.coverage.exclusions>
+
         <!-- versions of maven plugins used - start -->
         <exec-maven-plugin.version>3.4.1</exec-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
