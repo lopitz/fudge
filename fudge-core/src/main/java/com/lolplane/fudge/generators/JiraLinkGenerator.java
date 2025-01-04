@@ -41,10 +41,9 @@ public class JiraLinkGenerator implements TagHrefGenerator {
 
     private String logMissingJiraConfiguration() {
         log.warn("!!! JGiven report generation - information. !!!");
-        System.out.format("Neither the system property \"%s\" nor the environment variable \"%s\" was set.%n", JIRA_BASE_URL_PROPERTY,
+        log.warn("Neither the system property \"{}\" nor the environment variable \"{}\" was set.%n", JIRA_BASE_URL_PROPERTY,
             JIRA_BASE_URL_VARIABLE);
-        System.out.format("Consider passing url as system property when starting the build. e.g for maven: mvn -D%s=https://jira.your.company" +
-                ".com%n",
+        log.warn("Consider passing url as system property when starting the build. e.g for maven: mvn -D{}=https://jira.your.company.com",
             JIRA_BASE_URL_PROPERTY);
         log.warn("No Jira links will be generated.");
         log.warn("!!! JGiven report generation - information end. !!!");
