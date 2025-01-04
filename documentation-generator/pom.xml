@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>de.opitz.fudge</groupId>
+        <groupId>com.lolplane.fudge</groupId>
         <artifactId>fudge-parent</artifactId>
         <version>0.1.0-SNAPSHOT</version>
     </parent>
@@ -13,7 +13,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>de.opitz.fudge</groupId>
+            <groupId>com.lolplane.fudge</groupId>
             <artifactId>fudge-core</artifactId>
             <version>${project.version}</version>
         </dependency>
