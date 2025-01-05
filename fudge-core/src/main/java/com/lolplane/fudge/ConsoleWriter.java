@@ -31,7 +31,11 @@ public class ConsoleWriter {
     }
 
     private void println(String level, String message, Object... args) {
-        printf("%s: %s", level, logFormat(message, args));
+        println("%s: %s".formatted(level, logFormat(message, args)));
+    }
+
+    public void println(String message, Object... args) {
+        println(logFormat(message, args));
     }
 
     private String logFormat(String message, Object[] args) {
