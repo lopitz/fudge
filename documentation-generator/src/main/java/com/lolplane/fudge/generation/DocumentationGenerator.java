@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
+import com.lolplane.fudge.ConsoleWriter;
 import com.lolplane.fudge.generation.dto.ConnectedIssue;
 import com.lolplane.fudge.generation.dto.Feature;
 import com.lolplane.fudge.generation.dto.Scenario;
@@ -31,27 +32,27 @@ import com.lolplane.fudge.jgiven.JGivenJsonParser;
 import com.lolplane.fudge.jgiven.dto.JGivenReport;
 import com.lolplane.fudge.jgiven.dto.JGivenTag;
 import com.lolplane.fudge.jgiven.dto.JGivenTestClass;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.mapstruct.factory.Mappers;
 
-@Slf4j
 public class DocumentationGenerator {
 
+    private final ConsoleWriter consoleWriter;
     private final JGivenJsonParser jgivenParser;
     private final FileSystem fileSystem;
     private final ScenarioToTestMapper scenarioMapper = Mappers.getMapper(ScenarioToTestMapper.class);
     private final FolderCreator folderCreator;
     private final MustacheFactory mustacheFactory = new DefaultMustacheFactory();
 
-    public DocumentationGenerator(JGivenJsonParser jgivenParser) {
-        this(jgivenParser, FileSystems.getDefault());
+    public DocumentationGenerator(ConsoleWriter consoleWriter, JGivenJsonParser jgivenParser) {
+        this(consoleWriter, jgivenParser, FileSystems.getDefault());
     }
 
-    public DocumentationGenerator(JGivenJsonParser jgivenParser, FileSystem fileSystem) {
+    public DocumentationGenerator(ConsoleWriter consoleWriter, JGivenJsonParser jgivenParser, FileSystem fileSystem) {
+        this.consoleWriter = consoleWriter;
         this.jgivenParser = jgivenParser;
         this.fileSystem = fileSystem;
-        this.folderCreator = new FolderCreator(fileSystem);
+        this.folderCreator = new FolderCreator(consoleWriter, fileSystem);
     }
 
     public void generateDocumentation(DocumentationParameters documentationParameters) throws IOException {
@@ -175,7 +176,7 @@ public class DocumentationGenerator {
         try {
             Files.writeString(targetFilePath, writer.toString());
         } catch (IOException e) {
-            log.error("Error writing documentation page for feature {} to {}", feature.name(), targetFilePath, e);
+            consoleWriter.error("Error writing documentation page for feature {} to {}", feature.name(), targetFilePath, e);
         }
     }
 
@@ -194,7 +195,9 @@ public class DocumentationGenerator {
             generateTargetFileWithTemplateEngine(openTemplate(documentationParameters.scenarioTemplate(), "templates/ScenarioTemplate.md"), variables,
                 fileSystem.getPath(targetRootPath.toString(), scenarioAndFileName.filePath().toString()));
         } catch (IOException e) {
-            log.error("Error writing documentation page for scenario {} to file {}", scenarioAndFileName.feature().name(), scenarioAndFileName.fileName(), e);
+            consoleWriter.error("Error writing documentation page for scenario {} to file {}", scenarioAndFileName
+                .feature()
+                .name(), scenarioAndFileName.fileName(), e);
         }
         return scenarioAndFileName;
     }

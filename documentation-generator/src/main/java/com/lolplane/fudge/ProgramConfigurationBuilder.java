@@ -12,19 +12,20 @@ import com.lolplane.fudge.cli.CommandLineOptions;
 import com.lolplane.fudge.cli.OptionHandler;
 import com.lolplane.fudge.cli.ProgramConfiguration;
 import com.lolplane.fudge.tools.Either;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.ParseException;
 import org.reflections.Reflections;
 
-@Slf4j
+@RequiredArgsConstructor
 public class ProgramConfigurationBuilder {
 
+    private final ConsoleWriter consoleWriter;
     private final CommandLineParser parser = new DefaultParser();
 
-    public ProgramConfigurationAndErrors buildProgramConfiguration(ConsoleWriter consoleWriter, String... args) throws ParseException {
+    public ProgramConfigurationAndErrors buildProgramConfiguration(String... args) throws ParseException {
         if (args.length == 0) {
             return new ProgramConfigurationAndErrors(ProgramConfiguration.empty().withHelpRequested(true), List.of());
         }
@@ -32,7 +33,7 @@ public class ProgramConfigurationBuilder {
         var constructorsAndErrors = findAllOptionHandlerConstructors();
         var errors = constructorsAndErrors.stream().flatMap(e -> e.left().stream()).toList();
         var constructors = constructorsAndErrors.stream().flatMap(e -> e.right().stream()).toList();
-        return new ProgramConfigurationAndErrors(buildProgramConfiguration(constructors, commandLine, consoleWriter), errors);
+        return new ProgramConfigurationAndErrors(buildProgramConfiguration(constructors, commandLine), errors);
     }
 
     private static List<Either<Exception, Constructor<? extends OptionHandler>>> findAllOptionHandlerConstructors() {
@@ -43,8 +44,7 @@ public class ProgramConfigurationBuilder {
             .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    private static ProgramConfiguration buildProgramConfiguration(List<Constructor<? extends OptionHandler>> constructors, CommandLine commandLine,
-        ConsoleWriter consoleWriter) {
+    private ProgramConfiguration buildProgramConfiguration(List<Constructor<? extends OptionHandler>> constructors, CommandLine commandLine) {
         return createOptionHandlers(constructors, consoleWriter)
             .sorted(Comparator.comparing(OptionHandler::priority).reversed())
             .reduce(ProgramConfiguration.empty(), (currentConfig, element) -> callOptionHandler(currentConfig, element, commandLine),
@@ -59,13 +59,13 @@ public class ProgramConfigurationBuilder {
             .map(constructor -> createInstance(constructor, consoleWriter));
     }
 
-    private static ProgramConfiguration callOptionHandler(ProgramConfiguration currentConfig, OptionHandler element, CommandLine line) {
+    private ProgramConfiguration callOptionHandler(ProgramConfiguration currentConfig, OptionHandler element, CommandLine line) {
         if (currentConfig.helpRequested()) {
             return currentConfig;
         }
         var result = element.handleCommandLine(line, currentConfig);
         if (result == null) {
-            log.error("The option handler {} returned null instead of a new program configuration. Using the default value for the option.", element
+            consoleWriter.error("The option handler {} returned null instead of a new program configuration. Using the default value for the option.", element
                 .getClass()
                 .getName());
             return currentConfig;

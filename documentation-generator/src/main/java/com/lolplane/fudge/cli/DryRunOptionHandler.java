@@ -1,5 +1,6 @@
 package com.lolplane.fudge.cli;
 
+import com.google.common.jimfs.Jimfs;
 import com.lolplane.fudge.ConsoleWriter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.cli.CommandLine;
@@ -13,7 +14,7 @@ public class DryRunOptionHandler implements OptionHandler {
     public ProgramConfiguration handleCommandLine(CommandLine commandLine, ProgramConfiguration currentConfiguration) {
         if (commandLine.hasOption(CommandLineOptions.dryRunOption())) {
             writeInformation();
-            return currentConfiguration.withDryRun(true);
+            return currentConfiguration.withFileSystem(Jimfs.newFileSystem());
         }
         return currentConfiguration;
     }

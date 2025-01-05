@@ -9,7 +9,7 @@ import java.util.UUID;
 import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
 import com.lolplane.fudge.ConsoleWriter;
-import com.lolplane.tools.LineBuffer;
+import com.lolplane.fudge.tools.LineBuffer;
 import lombok.SneakyThrows;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
@@ -65,22 +65,6 @@ class TargetOptionHandlerTest {
         assertThat(Files.exists(expectedFolder)).isTrue();
         assertThat(actual.target()).isEqualTo(expectedFolder);
         assertThat(lineBuffer.lines()).containsExactly("The given target directory [%s] did not exist. It's created now.".formatted(expectedFolder));
-    }
-
-    @SneakyThrows
-    @Test
-    @DisplayName("should not change target and write info message not creating directory if path does not exist and dry run is enabled")
-    void shouldNotChangeTargetAndWriteInfoMessageIfPathDoesNotExist() {
-        var folderName = UUID.randomUUID().toString();
-        var expectedFolder = fileSystem.getPath(folderName).toAbsolutePath();
-        var commandLine = new DefaultParser().parse(new Options().addOption(CommandLineOptions.targetOption()), new String[]{"-t", expectedFolder.toString()});
-
-        var actual = new TargetOptionHandler(consoleWriter).handleCommandLine(commandLine, initialProgramConfiguration.withDryRun(true));
-
-        assertThat(expectedFolder).doesNotExist();
-        assertThat(actual.target()).isNull();
-        assertThat(lineBuffer.lines()).containsExactly(("The given target directory [%s] did not exist. The dry run mode is enabled, hence it has not been " +
-            "created.").formatted(expectedFolder));
     }
 
     @SneakyThrows

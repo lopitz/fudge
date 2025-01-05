@@ -50,7 +50,7 @@ class FeatureDocumentationGeneratorTest {
     @Test
     @DisplayName("should call document generator if help was not requested")
     void shouldCallDocumentGeneratorIfHelpWasNotRequested() {
-        FeatureDocumentationGenerator.main(new String[]{"-s", "non-existing path:!"});
+        FeatureDocumentationGenerator.main(new String[]{"-s", "non-existing path:!", "-t", "...:!/\\"});
         assertThat(capturedOutput.toString(StandardCharsets.UTF_8)).contains("The given source directory [non-existing path:!] does not exist.");
     }
 

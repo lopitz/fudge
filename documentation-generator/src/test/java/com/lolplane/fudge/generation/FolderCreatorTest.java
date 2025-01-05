@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.util.regex.Pattern;
 
 import com.google.common.jimfs.Jimfs;
+import com.lolplane.fudge.ConsoleWriter;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -25,7 +26,7 @@ class FolderCreatorTest {
     @BeforeEach
     void setupTest() {
         fileSystem = Jimfs.newFileSystem();
-        folderCreator = new FolderCreator(fileSystem);
+        folderCreator = new FolderCreator(new ConsoleWriter(), fileSystem);
     }
 
     @AfterEach

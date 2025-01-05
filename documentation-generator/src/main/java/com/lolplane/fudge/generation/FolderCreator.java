@@ -7,19 +7,17 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.UUID;
 
-import lombok.extern.slf4j.Slf4j;
+import com.lolplane.fudge.ConsoleWriter;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
-@Slf4j
+@RequiredArgsConstructor
 public class FolderCreator {
 
     private static final String SPECIAL_FILESYSTEM_CHARACTERS = "[\\\\/?`'\"]";
 
+    private final ConsoleWriter consoleWriter;
     private final FileSystem fileSystem;
-
-    public FolderCreator(FileSystem fileSystem) {
-        this.fileSystem = fileSystem;
-    }
 
     public Path createFolder(String targetedName, Path rootTargetPath) {
         var folderName = StringUtils.abbreviateMiddle(targetedName.replaceAll(SPECIAL_FILESYSTEM_CHARACTERS, "_"), "...", 250);
@@ -39,7 +37,7 @@ public class FolderCreator {
             }
             return Files.createDirectories(targetPath);
         } catch (IOException e) {
-            log.warn("Error creating folder {}", folderName, e);
+            consoleWriter.warn("Error creating folder {}", folderName, e);
         }
         return null;
     }

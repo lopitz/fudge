@@ -1,4 +1,4 @@
-package com.lolplane.tools;
+package com.lolplane.fudge.tools;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import com.lolplane.fudge.cli.MultipleIOException;
+import com.lolplane.fudge.exceptions.MultipleIOException;
 
 public class LineBuffer implements AutoCloseable {
 

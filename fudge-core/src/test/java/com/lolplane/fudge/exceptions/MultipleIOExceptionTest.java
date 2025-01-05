@@ -1,4 +1,4 @@
-package com.lolplane.fudge.cli;
+package com.lolplane.fudge.exceptions;
 
 import java.io.IOException;
 import java.util.ArrayList;

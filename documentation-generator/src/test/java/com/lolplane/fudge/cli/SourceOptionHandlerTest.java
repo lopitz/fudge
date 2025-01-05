@@ -3,7 +3,7 @@ package com.lolplane.fudge.cli;
 import java.nio.file.Path;
 
 import com.lolplane.fudge.ConsoleWriter;
-import com.lolplane.tools.LineBuffer;
+import com.lolplane.fudge.tools.LineBuffer;
 import lombok.SneakyThrows;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;

@@ -3,7 +3,7 @@ package com.lolplane.fudge.cli;
 import java.io.IOException;
 
 import com.lolplane.fudge.ConsoleWriter;
-import com.lolplane.tools.LineBuffer;
+import com.lolplane.fudge.tools.LineBuffer;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
@@ -41,7 +41,7 @@ class DryRunOptionHandlerTest {
 
         var actual = new DryRunOptionHandler(consoleWriter).handleCommandLine(commandLine, ProgramConfiguration.empty());
 
-        assertThat(actual.dryRun()).isTrue();
+        assertThat(actual.fileSystem().provider().getClass().getName()).isEqualTo("com.google.common.jimfs.JimfsFileSystemProvider");
     }
 
     @Test
@@ -51,7 +51,7 @@ class DryRunOptionHandlerTest {
 
         var actual = new DryRunOptionHandler(consoleWriter).handleCommandLine(commandLine, ProgramConfiguration.empty());
 
-        assertThat(actual.dryRun()).isFalse();
+        assertThat(actual.fileSystem().provider().getClass().getName()).isNotEqualTo("com.google.common.jimfs.JimfsFileSystemProvider");
     }
 
     @Test
@@ -59,9 +59,8 @@ class DryRunOptionHandlerTest {
     void shouldWriteInformationMessageOfEnabledDryRunIfOptionIsGiven() throws ParseException, IOException {
         var commandLine = new DefaultParser().parse(new Options().addOption(option), new String[]{"-" + option.getOpt()});
 
-        var actual = new DryRunOptionHandler(consoleWriter).handleCommandLine(commandLine, ProgramConfiguration.empty());
+        new DryRunOptionHandler(consoleWriter).handleCommandLine(commandLine, ProgramConfiguration.empty());
 
-        assertThat(actual.dryRun()).isTrue();
         assertThat(lineBuffer.lines()).containsExactly(
             "",
             "The dry run mode has been enabled.",

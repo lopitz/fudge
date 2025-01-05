@@ -27,10 +27,6 @@ public class TargetOptionHandler implements OptionHandler {
         if (Files.exists(targetPath)) {
             return checkTargetFolderIsDirectory(targetPath, currentConfiguration);
         }
-        if (currentConfiguration.dryRun()) {
-            consoleWriter.printf("The given target directory [%s] did not exist. The dry run mode is enabled, hence it has not been created.%n", targetPath);
-            return currentConfiguration;
-        }
         try {
             Files.createDirectories(targetPath);
             consoleWriter.printf("The given target directory [%s] did not exist. It's created now.%n", targetPath);

@@ -9,16 +9,19 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.lolplane.fudge.ConsoleWriter;
 import com.lolplane.fudge.jgiven.dto.JGivenReport;
 import com.lolplane.fudge.jgiven.dto.JGivenScenario;
 import com.lolplane.fudge.jgiven.dto.JGivenTag;
 import com.lolplane.fudge.jgiven.dto.JGivenTestClass;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 
-@Slf4j
+@RequiredArgsConstructor
 public class JGivenJsonParser {
 
     private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new Jdk8Module());
+
+    private final ConsoleWriter consoleWriter;
 
     public JGivenReport parseReportFiles(URL... urls) {
         return parseReportFiles(Arrays.stream(urls));
@@ -51,7 +54,7 @@ public class JGivenJsonParser {
         try {
             return objectMapper.readValue(url, JGivenTestClass.class);
         } catch (IOException e) {
-            log.error("Error while loading report from {}", url, e);
+            consoleWriter.error("Error while loading report from {}", url, e);
         }
         return null;
     }

@@ -8,10 +8,8 @@ import com.lolplane.fudge.cli.ProgramConfiguration;
 import com.lolplane.fudge.generation.DocumentationGenerator;
 import com.lolplane.fudge.generation.DocumentationParameters;
 import com.lolplane.fudge.jgiven.JGivenJsonParser;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.ParseException;
 
-@Slf4j
 public class FeatureDocumentationGenerator {
 
     private static ConsoleWriter consoleWriter;
@@ -33,15 +31,15 @@ public class FeatureDocumentationGenerator {
             consoleWriter.println("Parsing failed. Reason: %s".formatted(exp.getMessage()));
         } catch (Exception e) {
             if (e.getCause() != null) {
-                log.error("Something went wrong.  Reason: {}", e.getCause().getMessage(), e.getCause());
+                consoleWriter.error("Something went wrong.  Reason: {}", e.getCause().getMessage(), e.getCause());
             } else {
-                log.error("Something went wrong.  Reason: {}", e.getMessage(), e);
+                consoleWriter.error("Something went wrong.  Reason: {}", e.getMessage(), e);
             }
         }
     }
 
     private static ProgramConfiguration buildProgramConfiguration(String[] args) throws ParseException {
-        var configurationAndErrors = new ProgramConfigurationBuilder().buildProgramConfiguration(consoleWriter, args);
+        var configurationAndErrors = new ProgramConfigurationBuilder(consoleWriter).buildProgramConfiguration(args);
         printErrors(configurationAndErrors.errors());
         return configurationAndErrors.configuration();
     }
@@ -51,7 +49,7 @@ public class FeatureDocumentationGenerator {
     }
 
     private static void generateDocumentation(ProgramConfiguration config) throws IOException {
-        var generator = new DocumentationGenerator(new JGivenJsonParser());
+        var generator = new DocumentationGenerator(consoleWriter, new JGivenJsonParser(consoleWriter));
         generator.generateDocumentation(new DocumentationParameters(config.source(), config.target(), null, null, null));
     }
 

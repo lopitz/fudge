@@ -4,14 +4,13 @@ import java.lang.annotation.Annotation;
 import java.util.Map;
 import java.util.Optional;
 
+import com.lolplane.fudge.ConsoleWriter;
 import com.lolplane.fudge.annotations.Story;
 import com.tngtech.jgiven.annotation.TagHrefGenerator;
 import com.tngtech.jgiven.config.TagConfiguration;
-import lombok.extern.slf4j.Slf4j;
 
 import static java.util.function.Predicate.not;
 
-@Slf4j
 public class JiraLinkGenerator implements TagHrefGenerator {
 
     private static final String JIRA_BASE_URL_VARIABLE = "JIRA_BASE_URL";
@@ -19,12 +18,19 @@ public class JiraLinkGenerator implements TagHrefGenerator {
     private static final String JIRA_URL = "%s/browse/%s";
 
     private final Map<String, String> environmentVariables;
+    private final ConsoleWriter consoleWriter;
 
+    @SuppressWarnings("unused") //called by JGiven
     public JiraLinkGenerator() {
-        environmentVariables = System.getenv();
+        this(new ConsoleWriter(), System.getenv());
     }
 
-    public JiraLinkGenerator(Map<String, String> environmentVariables) {
+    public JiraLinkGenerator(ConsoleWriter consoleWriter) {
+        this(consoleWriter, System.getenv());
+    }
+
+    public JiraLinkGenerator(ConsoleWriter consoleWriter, Map<String, String> environmentVariables) {
+        this.consoleWriter = consoleWriter;
         this.environmentVariables = environmentVariables;
     }
 
@@ -33,20 +39,20 @@ public class JiraLinkGenerator implements TagHrefGenerator {
         if (value instanceof String issue) {
             return extractJiraBaseUrl(annotation)
                 .map(this::removeTrailingForwardSlashes)
-                .map(baseUrl -> JIRA_URL.formatted(baseUrl, issue))
+                .map(baseUrl -> JIRA_URL.formatted(baseUrl, removeBeginningForwardSlashes(removeTrailingForwardSlashes(issue))))
                 .orElseGet(this::logMissingJiraConfiguration);
         }
         return "";
     }
 
     private String logMissingJiraConfiguration() {
-        log.warn("!!! JGiven report generation - information. !!!");
-        log.warn("Neither the system property \"{}\" nor the environment variable \"{}\" was set.%n", JIRA_BASE_URL_PROPERTY,
+        consoleWriter.warn("!!! JGiven report generation - information. !!!");
+        consoleWriter.warn("Neither the system property \"{}\" nor the environment variable \"{}\" was set.", JIRA_BASE_URL_PROPERTY,
             JIRA_BASE_URL_VARIABLE);
-        log.warn("Consider passing url as system property when starting the build. e.g for maven: mvn -D{}=https://jira.your.company.com",
+        consoleWriter.warn("Consider passing url as system property when starting the build. e.g for maven: mvn -D{}=https://jira.your.company.com",
             JIRA_BASE_URL_PROPERTY);
-        log.warn("No Jira links will be generated.");
-        log.warn("!!! JGiven report generation - information end. !!!");
+        consoleWriter.warn("No Jira links will be generated.");
+        consoleWriter.warn("!!! JGiven report generation - information end. !!!");
         return "";
     }
 
@@ -72,7 +78,7 @@ public class JiraLinkGenerator implements TagHrefGenerator {
     }
 
     private String removeTrailingForwardSlashes(String input) {
-        if (input == null || input.isEmpty()) {
+        if (input.isEmpty()) {
             return input;
         }
 
@@ -82,6 +88,19 @@ public class JiraLinkGenerator implements TagHrefGenerator {
         }
 
         return input.substring(0, lastIndex + 1);
+    }
+
+    private String removeBeginningForwardSlashes(String input) {
+        if (input.isEmpty()) {
+            return input;
+        }
+
+        var lastIndex = 0;
+        while (lastIndex < input.length() && input.charAt(lastIndex) == '/') {
+            lastIndex++;
+        }
+
+        return input.substring(lastIndex);
     }
 
 }

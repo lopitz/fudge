@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.util.stream.Collectors;
 
 import com.google.common.jimfs.Jimfs;
+import com.lolplane.fudge.ConsoleWriter;
 import com.lolplane.fudge.jgiven.JGivenJsonParser;
 import com.lolplane.fudge.jgiven.TestIOUtils;
 import lombok.SneakyThrows;
@@ -15,13 +16,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class DocumentationGeneratorTest {
 
+    private final ConsoleWriter consoleWriter = new ConsoleWriter();
+
     @SneakyThrows
     @Test
     @DisplayName("should build feature index file")
     void shouldBuildFeatureIndexFile() {
-        var parser = new JGivenJsonParser();
+        var parser = new JGivenJsonParser(consoleWriter);
         var fileSystem = prepareFileSystem();
-        var generator = new DocumentationGenerator(parser, fileSystem);
+        var generator = new DocumentationGenerator(consoleWriter, parser, fileSystem);
         generator.generateDocumentation(new DocumentationParameters(fileSystem.getPath("/target", "jgiven-reports"), null, null, null, null));
 
         var result = Files.lines(fileSystem.getPath("target", "feature-documentation", "index.md")).collect(Collectors.joining("\n"));
@@ -32,9 +35,9 @@ class DocumentationGeneratorTest {
     @DisplayName("should fall back to packaged index template in case given on does not exist")
     @SneakyThrows
     void shouldFallBackToPackagedIndexTemplateInCaseGivenOnDoesNotExist() {
-        var parser = new JGivenJsonParser();
+        var parser = new JGivenJsonParser(consoleWriter);
         var fileSystem = prepareFileSystem();
-        var generator = new DocumentationGenerator(parser, fileSystem);
+        var generator = new DocumentationGenerator(consoleWriter, parser, fileSystem);
         generator.generateDocumentation(new DocumentationParameters(fileSystem.getPath("/target", "jgiven-reports"), null, "/templates/not-existing-template" +
             ".md", null, null));
 
@@ -46,9 +49,9 @@ class DocumentationGeneratorTest {
     @DisplayName("should use given index template")
     @SneakyThrows
     void shouldUseGivenIndexTemplate() {
-        var parser = new JGivenJsonParser();
+        var parser = new JGivenJsonParser(consoleWriter);
         var fileSystem = prepareFileSystem();
-        var generator = new DocumentationGenerator(parser, fileSystem);
+        var generator = new DocumentationGenerator(consoleWriter, parser, fileSystem);
         generator.generateDocumentation(new DocumentationParameters(fileSystem.getPath("/target", "jgiven-reports"), null, "/templates/existing-template.md",
             null, null));
 
@@ -60,9 +63,9 @@ class DocumentationGeneratorTest {
     @Test
     @DisplayName("should generate a file for each scenario/behavior of a features")
     void shouldGenerateAFileForEachScenarioBehaviorOfAFeatures() {
-        var parser = new JGivenJsonParser();
+        var parser = new JGivenJsonParser(consoleWriter);
         var fileSystem = prepareFileSystem();
-        var generator = new DocumentationGenerator(parser, fileSystem);
+        var generator = new DocumentationGenerator(consoleWriter, parser, fileSystem);
         generator.generateDocumentation(new DocumentationParameters(fileSystem.getPath("/target", "jgiven-reports"), null, null, null, null));
 
         var actual = Files.find(fileSystem.getPath("target", "feature-documentation", "yearly limit"), 1, (left, right) -> true).toList();
