@@ -69,4 +69,13 @@ class HelpOptionTest {
             " -t,--target <arg>   defines the target directory");
     }
 
+    @SneakyThrows
+    @Test
+    @DisplayName("should have highest priority")
+    void shouldHaveHighestPriority() {
+        var actual = new HelpOption(consoleWriter);
+
+        assertThat(actual.priority()).isEqualTo(Integer.MAX_VALUE);
+    }
+
 }

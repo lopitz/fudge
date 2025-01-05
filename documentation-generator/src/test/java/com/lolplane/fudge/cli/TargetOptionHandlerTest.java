@@ -3,6 +3,7 @@ package com.lolplane.fudge.cli;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.UUID;
 
 import com.google.common.jimfs.Configuration;
@@ -119,4 +120,17 @@ class TargetOptionHandlerTest {
             "");
     }
 
+
+    @SneakyThrows
+    @Test
+    @DisplayName("should return given configuration if this option was not set by the command line")
+    void shouldReturnGivenConfigurationIfThisOptionWasNotSetByTheCommandLine() {
+        var expected = ProgramConfiguration.empty().withSource(Path.of("expected"));
+
+        var commandLine = new DefaultParser().parse(new Options().addOption(CommandLineOptions.targetOption()), new String[]{});
+
+        var actual = new TargetOptionHandler(consoleWriter).handleCommandLine(commandLine, expected);
+
+        assertThat(actual).isEqualTo(expected);
+    }
 }

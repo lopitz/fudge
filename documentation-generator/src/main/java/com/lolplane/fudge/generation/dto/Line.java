@@ -14,7 +14,4 @@ public record Line(List<LineElement> value, DataTable table) {
         this(value, null);
     }
 
-    public Line(DataTable dataTable) {
-        this(List.of(), dataTable);
-    }
 }

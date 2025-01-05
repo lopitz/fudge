@@ -68,4 +68,17 @@ class SourceOptionHandlerTest {
         assertThat(lineBuffer.lines()).containsExactly("The given source directory [%s] is not a directory.".formatted(tempFile.getAbsolutePath()));
     }
 
+    @SneakyThrows
+    @Test
+    @DisplayName("should return given configuration if this option was not set by the command line")
+    void shouldReturnGivenConfigurationIfThisOptionWasNotSetByTheCommandLine() {
+        var expected = ProgramConfiguration.empty().withSource(Path.of("expected"));
+
+        var commandLine = new DefaultParser().parse(new Options().addOption(CommandLineOptions.sourceOption()), new String[]{});
+
+        var actual = new SourceOptionHandler(consoleWriter).handleCommandLine(commandLine, expected);
+
+        assertThat(actual).isEqualTo(expected);
+    }
+
 }

@@ -13,17 +13,12 @@ public record DataTable(String headerType, List<String> header, List<Row> rows) 
     public static class DataTableBuilder {
 
         private final List<Row> rows = new ArrayList<>();
+        private final String headerType;
 
-        private String headerType;
         private int numberOfColumns = 0;
 
         DataTableBuilder() {
             this.headerType = "HORIZONTAL";
-        }
-
-        public DataTableBuilder headerType(String headerType) {
-            this.headerType = headerType;
-            return this;
         }
 
         public DataTableBuilder withRow(String... data) {

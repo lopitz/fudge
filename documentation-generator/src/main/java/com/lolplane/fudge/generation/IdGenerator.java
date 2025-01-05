@@ -12,10 +12,6 @@ public record IdGenerator<T>(Iterator<T> iterator) {
     private static class IntIterator implements Iterator<Integer> {
         private int currentValue;
 
-        public IntIterator() {
-            this(1);
-        }
-
         public IntIterator(int seed) {
             this.currentValue = seed;
         }
