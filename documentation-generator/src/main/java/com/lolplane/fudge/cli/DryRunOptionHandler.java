@@ -11,6 +11,11 @@ public class DryRunOptionHandler implements OptionHandler {
     private final ConsoleWriter consoleWriter;
 
     @Override
+    public int priority() {
+        return 0;
+    }
+
+    @Override
     public ProgramConfiguration handleCommandLine(CommandLine commandLine, ProgramConfiguration currentConfiguration) {
         if (commandLine.hasOption(CommandLineOptions.dryRunOption())) {
             writeInformation();

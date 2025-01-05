@@ -45,6 +45,14 @@ class DryRunOptionHandlerTest {
     }
 
     @Test
+    @DisplayName("should have a middle priority")
+    void shouldHaveAMiddlePriority() {
+        var actual = new DryRunOptionHandler(consoleWriter);
+
+        assertThat(actual.priority()).isZero();
+    }
+
+    @Test
     @DisplayName("should not set dry run in application configuration if option is not given")
     void shouldNotSetDryRunInApplicationConfigurationIfOptionIsNotGiven() throws ParseException {
         var commandLine = new DefaultParser().parse(new Options().addOption(option), new String[]{});
