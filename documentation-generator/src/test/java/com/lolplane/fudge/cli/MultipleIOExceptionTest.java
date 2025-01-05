@@ -80,8 +80,10 @@ class MultipleIOExceptionTest {
         var exception1 = new IOException("Exception 1");
         var exceptions = List.of(exception1);
         var multipleIOException = new MultipleIOException(exceptions);
+        var actual = multipleIOException.getCauses();
+        var newException = new IOException("New Exception");
 
-        assertThatThrownBy(() -> multipleIOException.getCauses().add(new IOException("New Exception")))
+        assertThatThrownBy(() -> actual.add(newException))
             .isInstanceOf(UnsupportedOperationException.class);
     }
 }

@@ -3,6 +3,8 @@ package com.lolplane.fudge.features.limit;
 import com.lolplane.fudge.annotations.Feature;
 import com.lolplane.fudge.annotations.Story;
 import com.tngtech.jgiven.junit5.ScenarioTest;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -84,6 +86,23 @@ import org.junit.jupiter.api.Test;
         """)
 @SuppressWarnings("java:S2699") // lopitz: Assertions are handled via the Then stage and the then() keyword
 class LimitTest extends ScenarioTest<GivenCompleteSystemStage, WhenLimitStage, ThenLimitStage> {
+
+    private static boolean jiraBaseUrlSet = false;
+
+    @BeforeAll
+    static void setup() {
+        jiraBaseUrlSet = System.getProperty("jira.base.url") != null;
+        if (!jiraBaseUrlSet) {
+            System.setProperty("jira.base.url", "https://jira.atlassian.com");
+        }
+    }
+
+    @AfterAll
+    static void tearDown() {
+        if (!jiraBaseUrlSet) {
+            System.clearProperty("jira.base.url");
+        }
+    }
 
     @Test
     @DisplayName("Provides a welcome page")

@@ -3,6 +3,8 @@ package com.lolplane.fudge.features.calculation;
 import com.lolplane.fudge.annotations.Feature;
 import com.lolplane.fudge.annotations.Story;
 import com.tngtech.jgiven.junit5.ScenarioTest;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -86,6 +88,23 @@ import org.junit.jupiter.params.provider.CsvSource;
         """)
 @SuppressWarnings("java:S2699") // The assertions are done automatically in the then() clauses
 class BaseAwardCalculationTest extends ScenarioTest<GivenCompleteSystemStage, WhenLimitStage, ThenAwardCalculationStage> {
+
+    private static boolean jiraBaseUrlSet = false;
+
+    @BeforeAll
+    static void setup() {
+        jiraBaseUrlSet = System.getProperty("jira.base.url") != null;
+        if (!jiraBaseUrlSet) {
+            System.setProperty("jira.base.url", "https://jira.atlassian.com");
+        }
+    }
+
+    @AfterAll
+    static void tearDown() {
+        if (!jiraBaseUrlSet) {
+            System.clearProperty("jira.base.url");
+        }
+    }
 
     @Test
     @DisplayName("calculates the base points")
