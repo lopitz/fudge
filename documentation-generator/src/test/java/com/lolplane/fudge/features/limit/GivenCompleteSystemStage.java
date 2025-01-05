@@ -3,6 +3,7 @@ package com.lolplane.fudge.features.limit;
 import com.tngtech.jgiven.Stage;
 
 public class GivenCompleteSystemStage extends Stage<GivenCompleteSystemStage> {
+
     public GivenCompleteSystemStage an_anonymous_user() {
         return self();
     }

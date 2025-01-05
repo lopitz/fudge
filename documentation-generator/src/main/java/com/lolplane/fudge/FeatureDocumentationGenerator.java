@@ -1,9 +1,12 @@
 package com.lolplane.fudge;
 
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.lolplane.fudge.cli.CommandLineOptions;
 import com.lolplane.fudge.cli.OptionHandler;
@@ -20,28 +23,13 @@ import org.reflections.Reflections;
 @Slf4j
 public class FeatureDocumentationGenerator {
 
+    private static ConsoleWriter consoleWriter;
+
     public static void main(String[] args) {
-        var consoleWriter = new ConsoleWriter();
+        consoleWriter = new ConsoleWriter();
         var parser = new DefaultParser();
         try {
-            var line = parser.parse(CommandLineOptions.buildCommandLineOptions(), args);
-            var constructors = new Reflections("com.lolplane.fudge.cli")
-                .getSubTypesOf(OptionHandler.class)
-                .stream()
-                .map(FeatureDocumentationGenerator::findConstructor)
-                .toList();
-
-            printErrors(constructors);
-
-            var config = constructors
-                .stream()
-                .filter(e -> Objects.isNull(e.error()))
-                .map(ConstructorAndError::constructor)
-                .filter(Objects::nonNull)
-                .map(constructor -> createInstance(constructor, consoleWriter))
-                .sorted(Comparator.comparing(OptionHandler::priority).reversed())
-                .reduce(ProgramConfiguration.empty(), (currentConfig, element) -> callOptionHandler(currentConfig, element, line), (ignored, right) -> right);
-
+            var config = buildProgramConfiguration(args, parser);
             if (config.helpRequested()) {
                 return;
             }
@@ -58,6 +46,36 @@ public class FeatureDocumentationGenerator {
         }
     }
 
+    private static ProgramConfiguration buildProgramConfiguration(String[] args, DefaultParser parser) throws ParseException {
+        var line = parser.parse(CommandLineOptions.buildCommandLineOptions(), args);
+        var constructors = findAllOptionHandlerConstructors();
+        printErrors(constructors);
+        return buildProgramConfiguration(constructors, line);
+    }
+
+    private static List<ConstructorAndError<? extends OptionHandler>> findAllOptionHandlerConstructors() {
+        return new Reflections("com.lolplane.fudge.cli")
+            .getSubTypesOf(OptionHandler.class)
+            .stream()
+            .map(FeatureDocumentationGenerator::findConstructor)
+            .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    private static ProgramConfiguration buildProgramConfiguration(List<ConstructorAndError<? extends OptionHandler>> constructors, CommandLine line) {
+        return createOptionHandlers(constructors)
+            .sorted(Comparator.comparing(OptionHandler::priority).reversed())
+            .reduce(ProgramConfiguration.empty(), (currentConfig, element) -> callOptionHandler(currentConfig, element, line), (ignored, right) -> right);
+    }
+
+    private static Stream<? extends OptionHandler> createOptionHandlers(List<ConstructorAndError<? extends OptionHandler>> constructors) {
+        return constructors
+            .stream()
+            .filter(e -> Objects.isNull(e.error()))
+            .map(ConstructorAndError::constructor)
+            .filter(Objects::nonNull)
+            .map(constructor -> createInstance(constructor, consoleWriter));
+    }
+
     private static ProgramConfiguration callOptionHandler(ProgramConfiguration currentConfig, OptionHandler element, CommandLine line) {
         if (currentConfig.helpRequested()) {
             return currentConfig;
@@ -72,11 +90,11 @@ public class FeatureDocumentationGenerator {
         return result;
     }
 
-    private static void printErrors(List<? extends ConstructorAndError<? extends OptionHandler>> constructors) {
+    private static void printErrors(List<ConstructorAndError<? extends OptionHandler>> constructors) {
         constructors
             .stream()
             .filter(constructorAndError -> Objects.nonNull(constructorAndError.error()))
-            .forEach(e -> log.warn(e.error().getMessage()));
+            .forEach(e -> consoleWriter.println(e.error().getMessage()));
     }
 
     private static <T extends OptionHandler> ConstructorAndError<T> findConstructor(Class<T> aClass) {

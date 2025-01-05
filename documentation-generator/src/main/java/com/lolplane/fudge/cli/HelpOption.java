@@ -2,11 +2,9 @@ package com.lolplane.fudge.cli;
 
 import com.lolplane.fudge.ConsoleWriter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
 
-@Slf4j
 @RequiredArgsConstructor
 public class HelpOption implements OptionHandler {
 

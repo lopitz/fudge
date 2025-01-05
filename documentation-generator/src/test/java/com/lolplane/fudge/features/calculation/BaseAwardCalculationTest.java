@@ -84,6 +84,7 @@ import org.junit.jupiter.params.provider.CsvSource;
         )
         ```
         """)
+@SuppressWarnings("java:S2699") // The assertions are done automatically in the then() clauses
 class BaseAwardCalculationTest extends ScenarioTest<GivenCompleteSystemStage, WhenLimitStage, ThenAwardCalculationStage> {
 
     @Test
@@ -104,11 +105,12 @@ class BaseAwardCalculationTest extends ScenarioTest<GivenCompleteSystemStage, Wh
     @DisplayName("calculates a lot of base points")
     @Story({"FEATUREDOCS-1123", "FEATUREDOCS-1224"})
     @ParameterizedTest
-    @CsvSource({
-        "purchase 1, 150",
-        "sale 1, 50",
-        "sharing on social media 1, 10"
-    })
+    @CsvSource(textBlock = """
+        purchase 1, 150
+        sale 1, 50
+        sharing on social media 1, 10
+        """
+    )
     void calculateALotOfBasePoints(String name, int award) {
         given()
             .an_anonymous_user().and()

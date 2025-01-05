@@ -2,7 +2,6 @@ package com.lolplane.fudge.generation;
 
 import java.io.IOException;
 import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
@@ -17,10 +16,6 @@ public class FolderCreator {
     private static final String SPECIAL_FILESYSTEM_CHARACTERS = "[\\\\/?`'\"]";
 
     private final FileSystem fileSystem;
-
-    public FolderCreator() {
-        this.fileSystem = FileSystems.getDefault();
-    }
 
     public FolderCreator(FileSystem fileSystem) {
         this.fileSystem = fileSystem;
@@ -38,7 +33,11 @@ public class FolderCreator {
 
     private Path createFolder(Path rootTargetPath, String folderName) {
         try {
-            return Files.createDirectories(fileSystem.getPath(rootTargetPath.toString(), folderName));
+            var targetPath = fileSystem.getPath(rootTargetPath.toString(), folderName);
+            if (Files.exists(targetPath)) {
+                return null;
+            }
+            return Files.createDirectories(targetPath);
         } catch (IOException e) {
             log.warn("Error creating folder {}", folderName, e);
         }
