@@ -9,10 +9,15 @@ import java.util.List;
 import lombok.With;
 
 @With
-public record ProgramConfiguration(FileSystem fileSystem, Path source, Path target, boolean helpRequested, List<String> configurationErrors) {
-
+public record ProgramConfiguration(
+    FileSystem fileSystem,
+    Path source,
+    Path target,
+    boolean helpRequested,
+    List<String> configurationErrors,
+    boolean verboseModeEnabled
+) {
     public static ProgramConfiguration empty() {
-        return new ProgramConfiguration(FileSystems.getDefault(), null, null, false, new LinkedList<>());
+        return new ProgramConfiguration(FileSystems.getDefault(), null, null, false, new LinkedList<>(), false);
     }
-
 }

@@ -29,7 +29,7 @@ public class ProgramConfigurationBuilder {
         if (args.length == 0) {
             return new ProgramConfigurationAndErrors(ProgramConfiguration.empty().withHelpRequested(true), List.of());
         }
-        var commandLine = parser.parse(CommandLineOptions.getCommandLineOptions(), args);
+        var commandLine = parser.parse(CommandLineOptions.options(), args);
         var constructorsAndErrors = findAllOptionHandlerConstructors();
         var errors = constructorsAndErrors.stream().flatMap(e -> e.left().stream()).toList();
         var constructors = constructorsAndErrors.stream().flatMap(e -> e.right().stream()).toList();

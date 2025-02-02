@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,4 +55,16 @@ class FeatureDocumentationGeneratorTest {
         assertThat(capturedOutput.toString(StandardCharsets.UTF_8)).contains("The given source directory [non-existing path:!] does not exist.");
     }
 
+    @SneakyThrows
+    @Test
+    @DisplayName("should call document generator with valid args given")
+    void shouldCallDocumentGeneratorWithValidArgsGiven() {
+        FeatureDocumentationGenerator.main(new String[]{"-n", "-s", "src/test/resources", "-v", "-t", "FeatureDocumentationGeneratorTest"});
+        capturedOutput.flush();
+        assertThat(capturedOutput.toString(StandardCharsets.UTF_8)).contains(
+            "DEBUG: Created folder base award calculation",
+            "DEBUG: Created folder profile",
+            "DEBUG: Created folder yearly limit"
+        );
+    }
 }

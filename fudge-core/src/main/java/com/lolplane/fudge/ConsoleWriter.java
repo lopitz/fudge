@@ -2,6 +2,8 @@ package com.lolplane.fudge;
 
 import java.io.PrintWriter;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.Delegate;
 
 @SuppressWarnings("java:S106") //lopitz: explicitly for console output, not logging output
@@ -9,6 +11,10 @@ public class ConsoleWriter {
 
     @Delegate
     private final PrintWriter printWriter;
+
+    @Getter
+    @Setter
+    private boolean debugEnabled = false;
 
     public ConsoleWriter() {
         printWriter = new PrintWriter(System.out, true);
@@ -20,6 +26,12 @@ public class ConsoleWriter {
 
     public PrintWriter printWriter() {
         return printWriter;
+    }
+
+    public void debug(String message, Object... args) {
+        if (debugEnabled) {
+            println("DEBUG", message, args);
+        }
     }
 
     public void warn(String message, Object... args) {

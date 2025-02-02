@@ -43,4 +43,5 @@ class LineBufferTest {
             assertThat(lines).containsExactly("First line", "Second line", "Third line");
         }
     }
+
 }

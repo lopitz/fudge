@@ -13,7 +13,8 @@ public final class CommandLineOptions {
     private static final Option dryRunOption = buildDryRunOption();
     private static final Option sourceOption = buildSourceOption();
     private static final Option targetOption = buildTargetOption();
-    private static final Options commandLineOptions = buildCommandLineOptions();
+    private static final Option verboseOption = buildVerboseOption();
+    private static final Options options = buildCommandLineOptions();
 
     private static Option buildHelpOption() {
         return new Option("h", "help", false, "print this message");
@@ -21,6 +22,10 @@ public final class CommandLineOptions {
 
     private static Option buildDryRunOption() {
         return new Option("n", "dry-run", false, "dry run - doesn't write anything but analyzes the found data");
+    }
+
+    private static Option buildVerboseOption() {
+        return new Option("v", "verbose", false, "verbose - prints a lot of debug information");
     }
 
     private static Option buildSourceOption() {
@@ -42,15 +47,15 @@ public final class CommandLineOptions {
         Options options = new Options();
         options.addOption(helpOption());
         options.addOption(dryRunOption());
-        options.addOption("d", "debug", false, "print debug message");
         options.addOption("i", "info", false, "print info message");
         options.addOption(targetOption());
         options.addOption(sourceOption());
+        options.addOption(verboseOption());
         return options;
     }
 
-    public static Options getCommandLineOptions() {
-        return commandLineOptions;
+    public static Options options() {
+        return options;
     }
 
     public static Option helpOption() {
@@ -67,6 +72,10 @@ public final class CommandLineOptions {
 
     public static Option targetOption() {
         return targetOption;
+    }
+
+    public static Option verboseOption() {
+        return verboseOption;
     }
 
     public static void printHelp(ConsoleWriter consoleWriter) {
