@@ -18,7 +18,7 @@ public class LineBuffer implements AutoCloseable {
 
     private final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
     private final PrintWriter printWriter = new PrintWriter(buffer, true);
-    private final List<Reader> usedReaders = new LinkedList<>();
+    final List<Reader> usedReaders = new LinkedList<>();
 
     public PrintWriter printWriter() {
         return printWriter;

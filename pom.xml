@@ -60,16 +60,24 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>17</java.version>
         <!-- code coverage properties - start -->
+        <coverage.report.path>target/coverage-report</coverage.report.path>
         <coverage.exclusions>**/dto/*</coverage.exclusions>
+        <jacoco.dataFile>${project.basedir}/target/jacoco.exec</jacoco.dataFile>
         <!-- code coverage properties - end -->
 
-        <!-- sonar configuration -->
+        <!-- sonar configuration start -->
+        <sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
+        <sonar.scm.prover>git</sonar.scm.prover>
         <sonar.coverage.exclusions>${coverage.exclusions}</sonar.coverage.exclusions>
+        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/fudge-build-report/target/site/jacoco-aggregate/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
+        <!-- sonar configuration end -->
 
         <!-- versions of maven plugins used - start -->
         <exec-maven-plugin.version>3.4.1</exec-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+        <sonar-maven-plugin.version>4.0.0.4121</sonar-maven-plugin.version>
         <!-- versions of maven plugins used - end -->
 
         <!-- versions of dependencies - start -->
@@ -82,10 +90,10 @@
         <junit.version>5.11.0</junit.version>
         <lombok.version>1.18.34</lombok.version>
         <mustache.version>0.9.14</mustache.version>
+        <mockito.version>5.12.0</mockito.version>
         <org.mapstruct.version>1.6.0</org.mapstruct.version>
         <reflections.version>0.10.2</reflections.version>
         <!-- versions of dependencies - end -->
-        <mockito.version>5.12.0</mockito.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -217,12 +225,15 @@
                 </configuration>
                 <executions>
                     <execution>
+                        <id>prepare-agent</id>
+                        <phase>process-test-classes</phase>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
                     </execution>
                     <execution>
                         <id>individual report</id>
+                        <phase>prepare-package</phase>
                         <goals>
                             <goal>report</goal>
                         </goals>
@@ -239,6 +250,11 @@
                     <configuration>
                         <skip>true</skip>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.sonarsource.scanner.maven</groupId>
+                    <artifactId>sonar-maven-plugin</artifactId>
+                    <version>${sonar-maven-plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>

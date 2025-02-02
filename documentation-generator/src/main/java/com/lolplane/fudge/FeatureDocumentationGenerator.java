@@ -49,7 +49,8 @@ public class FeatureDocumentationGenerator {
     }
 
     private static void generateDocumentation(ProgramConfiguration config) throws IOException {
-        var generator = new DocumentationGenerator(consoleWriter, new JGivenJsonParser(consoleWriter));
+        consoleWriter.setDebugEnabled(config.verboseModeEnabled());
+        var generator = new DocumentationGenerator(consoleWriter, new JGivenJsonParser(consoleWriter), config.fileSystem());
         generator.generateDocumentation(new DocumentationParameters(config.source(), config.target(), null, null, null));
     }
 

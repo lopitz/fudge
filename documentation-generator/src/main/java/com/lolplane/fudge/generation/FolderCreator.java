@@ -35,7 +35,9 @@ public class FolderCreator {
             if (Files.exists(targetPath)) {
                 return null;
             }
-            return Files.createDirectories(targetPath);
+            var result = Files.createDirectories(targetPath);
+            consoleWriter.debug("Created folder {}", folderName);
+            return result;
         } catch (IOException e) {
             consoleWriter.warn("Error creating folder {}", folderName, e);
         }

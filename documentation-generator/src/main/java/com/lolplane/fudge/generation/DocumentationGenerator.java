@@ -8,7 +8,6 @@ import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -43,10 +42,6 @@ public class DocumentationGenerator {
     private final ScenarioToTestMapper scenarioMapper = Mappers.getMapper(ScenarioToTestMapper.class);
     private final FolderCreator folderCreator;
     private final MustacheFactory mustacheFactory = new DefaultMustacheFactory();
-
-    public DocumentationGenerator(ConsoleWriter consoleWriter, JGivenJsonParser jgivenParser) {
-        this(consoleWriter, jgivenParser, FileSystems.getDefault());
-    }
 
     public DocumentationGenerator(ConsoleWriter consoleWriter, JGivenJsonParser jgivenParser, FileSystem fileSystem) {
         this.consoleWriter = consoleWriter;
@@ -139,6 +134,7 @@ public class DocumentationGenerator {
         var variables = Map.<String, Object>of("features", features);
         var resultPath = fileSystem.getPath(targetRootPath.toString(), "index.md");
         generateTargetFileWithTemplateEngine(featuresIndexTemplate, variables, resultPath);
+        consoleWriter.debug("Generated documentation index at {}", resultPath);
     }
 
     private void generateTargetFileWithTemplateEngine(InputStream template, Map<String, Object> variables, Path resultPath) {
@@ -147,6 +143,7 @@ public class DocumentationGenerator {
             var writer = new StringWriter();
             mustache.execute(writer, variables);
             Files.writeString(resultPath, writer.toString());
+            consoleWriter.debug("Generated documentation page at {}", resultPath);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -175,6 +172,7 @@ public class DocumentationGenerator {
         var targetFilePath = fileSystem.getPath(targetRootPath.toString(), feature.featureFolder(), "index.md");
         try {
             Files.writeString(targetFilePath, writer.toString());
+            consoleWriter.debug("Generated documentation page for feature {} at {}", feature.name(), targetFilePath);
         } catch (IOException e) {
             consoleWriter.error("Error writing documentation page for feature {} to {}", feature.name(), targetFilePath, e);
         }
