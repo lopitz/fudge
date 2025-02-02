@@ -45,4 +45,23 @@ class ConsoleWriterTest {
         assertThat(capturedOutput.lines()).containsExactly("WARN: parameter1=one, parameter2=two");
     }
 
+    @SneakyThrows
+    @Test
+    @DisplayName("should produce debug output when debug is activated")
+    void shouldProduceDebugOutputWhenDebugIsActivated() {
+        var writer = new ConsoleWriter(capturedOutput.printWriter());
+        writer.setDebugEnabled(true);
+        writer.debug("debug message");
+        assertThat(capturedOutput.lines()).contains("DEBUG: debug message");
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("should not produce debug output when debug is not active")
+    void shouldNotProduceDebugOutputWhenDebugIsNotActive() {
+        var writer = new ConsoleWriter(capturedOutput.printWriter());
+        writer.setDebugEnabled(false);
+        writer.debug("debug message not to be shown");
+        assertThat(capturedOutput.lines()).isEmpty();
+    }
 }
