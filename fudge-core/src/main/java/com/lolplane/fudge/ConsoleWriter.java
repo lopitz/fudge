@@ -1,6 +1,7 @@
 package com.lolplane.fudge;
 
 import java.io.PrintWriter;
+import java.io.StringWriter;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -51,9 +52,13 @@ public class ConsoleWriter {
     }
 
     private String logFormat(String message, Object[] args) {
+        return replaceParameters(message, args) + createStackTrace(args);
+    }
+
+    private String replaceParameters(String message, Object[] args) {
         int currentPosition = message.indexOf("{}");
         int currentArg = 0;
-        StringBuilder result = new StringBuilder();
+        var result = new StringBuilder();
         int lastPosition = 0;
 
         while (currentPosition != -1) {
@@ -68,5 +73,14 @@ public class ConsoleWriter {
         }
         result.append(message.substring(lastPosition));
         return result.toString();
+    }
+
+    private String createStackTrace(Object[] args) {
+        if (args.length > 0 && args[args.length - 1] instanceof Throwable throwable) {
+            var sw = new StringWriter();
+            throwable.printStackTrace(new PrintWriter(sw));
+            return " " + sw;
+        }
+        return "";
     }
 }

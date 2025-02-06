@@ -64,4 +64,16 @@ class ConsoleWriterTest {
         writer.debug("debug message not to be shown");
         assertThat(capturedOutput.lines()).isEmpty();
     }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("should print out message and stacktrace if last argument is exception")
+    void shouldPrintOutMessageAndStacktraceIfLastArgumentIsException() {
+        var writer = new ConsoleWriter(capturedOutput.printWriter());
+        writer.warn("Message {}", "shows an exception.", new Exception("Expected exception"));
+        assertThat(capturedOutput.lines()).contains(
+            "WARN: Message shows an exception. java.lang.Exception: Expected exception",
+            "\tat com.lolplane.fudge.ConsoleWriterTest.shouldPrintOutMessageAndStacktraceIfLastArgumentIsException(ConsoleWriterTest.java:73)"
+        );
+    }
 }
