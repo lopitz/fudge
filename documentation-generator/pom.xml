@@ -10,6 +10,9 @@
     </parent>
 
     <artifactId>documentation-generator</artifactId>
+    <properties>
+        <maven-assembly-plugin.version>3.6.0</maven-assembly-plugin.version>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -95,6 +98,30 @@
                 <configuration>
                     <format>text</format>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>${maven-assembly-plugin.version}</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.lolplane.fudge.FeatureDocumentationGenerator</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
