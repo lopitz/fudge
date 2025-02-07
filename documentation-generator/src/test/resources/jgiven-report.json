@@ -254,21 +254,21 @@
       "fullType": "de.opitz.poc.featuredoc.jgiven.Story",
       "type": "Story",
       "value": "FEATUREDOCS-2311",
-      "description": "\u003ca href\u003d\"https://jira.corp.ebay.com/browse/FEATUREDOCS-2311\u003eFEATUREDOCS-2311\u003c/a\u003e",
+      "description": "\u003ca href\u003d\"https://jira.lolplane.com/browse/FEATUREDOCS-2311\u003eFEATUREDOCS-2311\u003c/a\u003e",
       "href": ""
     },
     "de.opitz.poc.featuredoc.jgiven.Story-FEATUREDOCS-2412": {
       "fullType": "de.opitz.poc.featuredoc.jgiven.Story",
       "type": "Story",
       "value": "FEATUREDOCS-2412",
-      "description": "\u003ca href\u003d\"https://jira.corp.ebay.com/browse/FEATUREDOCS-2412\u003eFEATUREDOCS-2412\u003c/a\u003e",
+      "description": "\u003ca href\u003d\"https://jira.lolplane.com/browse/FEATUREDOCS-2412\u003eFEATUREDOCS-2412\u003c/a\u003e",
       "href": ""
     },
     "de.opitz.poc.featuredoc.jgiven.Story-FEATUREDOCS-1011": {
       "fullType": "de.opitz.poc.featuredoc.jgiven.Story",
       "type": "Story",
       "value": "FEATUREDOCS-1011",
-      "description": "\u003ca href\u003d\"https://jira.corp.ebay.com/browse/FEATUREDOCS-1011\u003eFEATUREDOCS-1011\u003c/a\u003e",
+      "description": "\u003ca href\u003d\"https://jira.lolplane.com/browse/FEATUREDOCS-1011\u003eFEATUREDOCS-1011\u003c/a\u003e",
       "href": ""
     }
   }

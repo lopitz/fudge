@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -42,6 +41,7 @@ public class DocumentationGenerator {
     private final ScenarioToTestMapper scenarioMapper = Mappers.getMapper(ScenarioToTestMapper.class);
     private final FolderCreator folderCreator;
     private final MustacheFactory mustacheFactory = new DefaultMustacheFactory();
+    private final PathNameCreator pathNameCreator = new PathNameCreator();
 
     public DocumentationGenerator(ConsoleWriter consoleWriter, JGivenJsonParser jgivenParser, FileSystem fileSystem) {
         this.consoleWriter = consoleWriter;
@@ -179,11 +179,13 @@ public class DocumentationGenerator {
     }
 
     private ScenarioAndFileName generateFileName(Scenario scenario, String parentPath, Feature feature) {
-        var fileName = "%s.md".formatted(UUID.randomUUID().toString());
+        var fileName = "%04d-%s.md".formatted(scenario.index(), pathNameCreator.createPathName(scenario.description()));
         return new ScenarioAndFileName(feature, scenario, fileName, fileSystem.getPath(parentPath, fileName));
     }
 
-    private ScenarioAndFileName buildScenarioFile(ScenarioAndFileName scenarioAndFileName, DocumentationParameters documentationParameters,
+    private ScenarioAndFileName buildScenarioFile(
+        ScenarioAndFileName scenarioAndFileName,
+        DocumentationParameters documentationParameters,
         Path targetRootPath) {
         try {
             var variables = Map.of(

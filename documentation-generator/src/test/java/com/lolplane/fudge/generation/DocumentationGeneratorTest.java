@@ -2,6 +2,7 @@ package com.lolplane.fudge.generation;
 
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.stream.Collectors;
 
 import com.google.common.jimfs.Jimfs;
@@ -38,8 +39,8 @@ class DocumentationGeneratorTest {
         var parser = new JGivenJsonParser(consoleWriter);
         var fileSystem = prepareFileSystem();
         var generator = new DocumentationGenerator(consoleWriter, parser, fileSystem);
-        generator.generateDocumentation(new DocumentationParameters(fileSystem.getPath("/target", "jgiven-reports"), null, "/templates/not-existing-template" +
-            ".md", null, null));
+        generator.generateDocumentation(new DocumentationParameters(fileSystem.getPath("/target", "jgiven-reports"), null,
+            "/templates/not-existing-template" + ".md", null, null));
 
         var result = Files.lines(fileSystem.getPath("target", "feature-documentation", "index.md")).collect(Collectors.joining("\n"));
         assertThat(result).isNotEmpty().contains("[yearly limit]");
@@ -68,9 +69,13 @@ class DocumentationGeneratorTest {
         var generator = new DocumentationGenerator(consoleWriter, parser, fileSystem);
         generator.generateDocumentation(new DocumentationParameters(fileSystem.getPath("/target", "jgiven-reports"), null, null, null, null));
 
-        var actual = Files.find(fileSystem.getPath("target", "feature-documentation", "yearly limit"), 1, (left, right) -> true).toList();
-        assertThat(actual).hasSize(4);
-        var result = Files.lines(fileSystem.getPath("target", "feature-documentation", "yearly limit", "index.md")).collect(Collectors.joining("\n"));
+        var actual = Files.find(fileSystem.getPath("target", "feature-documentation", "yearly_limit"), 1, (left, right) -> true).toList();
+        assertThat(actual)
+            .hasSize(4)
+            .map(Path::getFileName)
+            .map(Path::toString)
+            .contains("yearly_limit", "index.md", "0001-provides_a_welcome_page.md", "0002-a_different_story.md");
+        var result = Files.lines(fileSystem.getPath("target", "feature-documentation", "yearly_limit", "index.md")).collect(Collectors.joining("\n"));
         assertThat(result).contains("# yearly limit");
     }
 

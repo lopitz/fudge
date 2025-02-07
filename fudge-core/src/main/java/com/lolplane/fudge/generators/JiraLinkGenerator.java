@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.lolplane.fudge.ConsoleWriter;
+import com.lolplane.fudge.annotations.Epic;
 import com.lolplane.fudge.annotations.Story;
 import com.tngtech.jgiven.annotation.TagHrefGenerator;
 import com.tngtech.jgiven.config.TagConfiguration;
@@ -73,6 +74,8 @@ public class JiraLinkGenerator implements TagHrefGenerator {
     private String extractJiraBaseUrlFromAnnotation(Annotation annotation) {
         if (annotation instanceof Story story) {
             return story.jiraBaseUrl();
+        } else if (annotation instanceof Epic epic) {
+            return epic.jiraBaseUrl();
         }
         return null;
     }

@@ -8,13 +8,10 @@ import java.util.regex.Pattern;
 import com.google.common.jimfs.Jimfs;
 import com.lolplane.fudge.ConsoleWriter;
 import lombok.SneakyThrows;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,36 +39,14 @@ class FolderCreatorTest {
         assertThat(actual).isEmptyDirectory().hasToString("/temp");
     }
 
-    @ParameterizedTest
-    @CsvSource({
-        "bla/blubb, bla_blubb",
-        "bla\\blubb, bla_blubb",
-        "bla'blubb, bla_blubb",
-        "bla\"blubb, bla_blubb",
-        "bla?blubb, bla_blubb",
-    })
-    @DisplayName("should replace special characters")
-    void shouldReplaceSpecialCharacters(String folderName, String expected) {
-        var actual = folderCreator.createFolder(folderName, fileSystem.getPath("/"));
-        assertThat(actual).isEmptyDirectory().hasToString("/" + expected);
-    }
-
-    @Test
-    @DisplayName("should limit folder name to 250 characters")
-    void shouldLimitFolderNameTo250Characters() {
-        var folderName = RandomStringUtils.randomAlphabetic(300);
-        var actual = folderCreator.createFolder(folderName, fileSystem.getPath("/"));
-        assertThat(actual.toString()).hasSize(251);
-    }
-
     @SneakyThrows
     @Test
-    @DisplayName("should create a uuid-based folder name in case folder could not be created")
-    void shouldCreateAUuidBasedFolderNameInCaseFolderCouldNotBeCreated() {
+    @DisplayName("should create a hash-based folder name in case folder could not be created")
+    void shouldCreateAHashBasedFolderNameInCaseFolderCouldNotBeCreated() {
         var folderName = "temp";
         Files.writeString(fileSystem.getPath("/", "temp"), "test");
         var actual = folderCreator.createFolder(folderName, fileSystem.getPath("/"));
-        assertThat(actual.toString()).isNotEqualTo("/temp").matches(Pattern.compile("/\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}"));
+        assertThat(actual.toString()).isNotEqualTo("/temp").matches(Pattern.compile("/([0-9a-f]{2}){1,4}"));
     }
 
 }

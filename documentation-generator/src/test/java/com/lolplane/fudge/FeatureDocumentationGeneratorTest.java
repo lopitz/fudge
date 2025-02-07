@@ -62,9 +62,9 @@ class FeatureDocumentationGeneratorTest {
         FeatureDocumentationGenerator.main(new String[]{"-n", "-s", "src/test/resources", "-v", "-t", "FeatureDocumentationGeneratorTest"});
         capturedOutput.flush();
         assertThat(capturedOutput.toString(StandardCharsets.UTF_8)).contains(
-            "DEBUG: Created folder base award calculation",
+            "DEBUG: Created folder base_award_calculation",
             "DEBUG: Created folder profile",
-            "DEBUG: Created folder yearly limit"
+            "DEBUG: Created folder yearly_limit"
         );
     }
 }

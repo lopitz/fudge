@@ -22,7 +22,6 @@ connected stories: {{#stories}}[{{{id}}}]({{{href}}}) {{/stories}}
 | {{#columns}} {{{.}}} | {{/columns}}
 {{/rows}}
 {{/table}}
-
 {{/givenLines}}
 
 **When**
@@ -40,7 +39,6 @@ connected stories: {{#stories}}[{{{id}}}]({{{href}}}) {{/stories}}
 | {{#columns}} {{{.}}} | {{/columns}}
 {{/rows}}
 {{/table}}
-
 {{/whenLines}}
 
 **Then**
@@ -58,7 +56,6 @@ connected stories: {{#stories}}[{{{id}}}]({{{href}}}) {{/stories}}
 | {{#columns}} {{{.}}} | {{/columns}}
 {{/rows}}
 {{/table}}
-
 {{/thenLines}}
 
 {{#cases}}
@@ -68,6 +65,5 @@ connected stories: {{#stories}}[{{{id}}}]({{{href}}}) {{/stories}}
 | {{number}} | {{#parameters}} {{{value}}} |{{/parameters}}
 {{/cases}}
 {{/cases}}
-
 {{/tests}}
 {{/scenario}}

@@ -5,27 +5,24 @@ import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
-import java.util.UUID;
 
 import com.lolplane.fudge.ConsoleWriter;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 
 @RequiredArgsConstructor
 public class FolderCreator {
 
-    private static final String SPECIAL_FILESYSTEM_CHARACTERS = "[\\\\/?`'\"]";
-
     private final ConsoleWriter consoleWriter;
     private final FileSystem fileSystem;
+    private final PathNameCreator pathNameCreator = new PathNameCreator();
 
     public Path createFolder(String targetedName, Path rootTargetPath) {
-        var folderName = StringUtils.abbreviateMiddle(targetedName.replaceAll(SPECIAL_FILESYSTEM_CHARACTERS, "_"), "...", 250);
+        var folderName = pathNameCreator.createPathName(targetedName);
         return Optional
             .ofNullable(createFolder(rootTargetPath, folderName))
             .orElseGet(() -> {
-                var uuidBasedName = UUID.randomUUID().toString();
-                return createFolder(rootTargetPath, uuidBasedName);
+                var hashBasedName = Integer.toHexString(folderName.hashCode());
+                return createFolder(rootTargetPath, hashBasedName);
             });
     }
 
