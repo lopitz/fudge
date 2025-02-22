@@ -2,7 +2,7 @@ package com.lolplane.fudge.cli;
 
 import java.io.IOException;
 
-import com.lolplane.fudge.ConsoleWriter;
+import com.lolplane.fudge.PrintWriterConsoleWriter;
 import com.lolplane.fudge.tools.LineBuffer;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Option;
@@ -19,13 +19,13 @@ class VerboseOptionHandlerTest {
 
     private final Option option = CommandLineOptions.verboseOption();
 
-    private ConsoleWriter consoleWriter;
+    private PrintWriterConsoleWriter consoleWriter;
     private LineBuffer lineBuffer;
 
     @BeforeEach
     void setUp() {
         lineBuffer = new LineBuffer();
-        consoleWriter = new ConsoleWriter(lineBuffer.printWriter());
+        consoleWriter = new PrintWriterConsoleWriter(lineBuffer.printWriter());
     }
 
     @AfterEach
@@ -70,10 +70,8 @@ class VerboseOptionHandlerTest {
         new VerboseOptionHandler(consoleWriter).handleCommandLine(commandLine, ProgramConfiguration.empty());
 
         assertThat(lineBuffer.lines()).containsExactly(
-            "",
-            "The verbose mode has been enabled.",
-            "The program will generate a lot of messages.",
-            "");
+            "INFO: The verbose mode has been enabled.",
+            "INFO: The program will generate a lot of messages.");
     }
 
 }

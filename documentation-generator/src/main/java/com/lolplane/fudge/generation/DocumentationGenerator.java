@@ -1,5 +1,6 @@
 package com.lolplane.fudge.generation;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -87,7 +88,27 @@ public class DocumentationGenerator {
                 return Files.newInputStream(templatePath);
             }
         }
-        return ClassLoader.getSystemClassLoader().getResource(defaultTemplateName).openStream();
+        return loadTemplateWithClassLoader(ClassLoader.getSystemClassLoader(), defaultTemplateName)
+            .or(() -> loadTemplateWithClassLoader(DocumentationGenerator.class.getClassLoader(), defaultTemplateName))
+            .map(this::openTemplate)
+            .orElseThrow(() -> new UncheckedIOException(new FileNotFoundException(
+                "Template [%s] was not found. Please specify a valid URL where the template can be found at.".formatted(defaultTemplateName))));
+    }
+
+    private InputStream openTemplate(URL url) {
+        try {
+            return url.openStream();
+        } catch (IOException e) {
+            throw new UncheckedIOException("Error opening template at URL [%s]".formatted(url.toString()), e);
+        }
+    }
+
+    private Optional<URL> loadTemplateWithClassLoader(ClassLoader classLoader, String template) {
+        try {
+            return Optional.ofNullable(classLoader.getResource(template));
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
     private List<Feature> buildFeatureDtos(List<JGivenTag> features, Map<String, String> folderMapping, JGivenReport report) {

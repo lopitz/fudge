@@ -55,6 +55,7 @@
         <module>fudge-core</module>
         <module>documentation-generator</module>
         <module>fudge-build-report</module>
+        <module>fudge-maven-plugin</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -20,11 +20,11 @@ public class SourceOptionHandler implements OptionHandler {
         var sourcePath = Path.of(optionValue);
         var sourceFile = sourcePath.toFile();
         if (!sourceFile.exists()) {
-            consoleWriter.printf("The given source directory [%s] does not exist.%n", sourcePath);
+            consoleWriter.warn("The given source directory [{}] does not exist.", sourcePath);
             return currentConfiguration;
         }
         if (!sourceFile.isDirectory()) {
-            consoleWriter.printf("The given source directory [%s] is not a directory.%n", sourcePath);
+            consoleWriter.warn("The given source directory [{}] is not a directory.", sourcePath);
             return currentConfiguration;
         }
         return currentConfiguration.withSource(sourcePath);

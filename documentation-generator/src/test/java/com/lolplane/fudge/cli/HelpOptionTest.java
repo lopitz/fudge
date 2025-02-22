@@ -1,6 +1,6 @@
 package com.lolplane.fudge.cli;
 
-import com.lolplane.fudge.ConsoleWriter;
+import com.lolplane.fudge.PrintWriterConsoleWriter;
 import com.lolplane.fudge.tools.LineBuffer;
 import lombok.SneakyThrows;
 import org.apache.commons.cli.DefaultParser;
@@ -14,12 +14,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class HelpOptionTest {
 
-    private ConsoleWriter consoleWriter;
+    private PrintWriterConsoleWriter consoleWriter;
 
     @BeforeEach
     void setupTest() {
         var lineBuffer = new LineBuffer();
-        consoleWriter = new ConsoleWriter(lineBuffer.printWriter());
+        consoleWriter = new PrintWriterConsoleWriter(lineBuffer.printWriter());
     }
 
     @AfterEach

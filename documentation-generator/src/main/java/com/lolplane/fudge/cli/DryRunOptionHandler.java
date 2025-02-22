@@ -25,10 +25,8 @@ public class DryRunOptionHandler implements OptionHandler {
     }
 
     private void writeInformation() {
-        consoleWriter.println();
-        consoleWriter.println("The dry run mode has been enabled.");
-        consoleWriter.println("The JGiven input data will be analyzed and the feature documentation will be prepared in memory.");
-        consoleWriter.println("However, there won't be any changes written to the file system.");
-        consoleWriter.println();
+        consoleWriter.info("The dry run mode has been enabled.");
+        consoleWriter.info("The JGiven input data will be analyzed and the feature documentation will be prepared in memory.");
+        consoleWriter.info("However, there won't be any changes written to the file system.");
     }
 }

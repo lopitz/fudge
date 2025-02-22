@@ -8,7 +8,7 @@ import java.util.UUID;
 
 import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
-import com.lolplane.fudge.ConsoleWriter;
+import com.lolplane.fudge.PrintWriterConsoleWriter;
 import com.lolplane.fudge.tools.LineBuffer;
 import lombok.SneakyThrows;
 import org.apache.commons.cli.DefaultParser;
@@ -24,14 +24,15 @@ class TargetOptionHandlerTest {
 
     private final FileSystem fileSystem = Jimfs.newFileSystem(Configuration.unix());
 
-    private ConsoleWriter consoleWriter;
+    private PrintWriterConsoleWriter consoleWriter;
     private LineBuffer lineBuffer;
     private ProgramConfiguration initialProgramConfiguration;
 
     @BeforeEach
     void setUp() {
         lineBuffer = new LineBuffer();
-        consoleWriter = new ConsoleWriter(lineBuffer.printWriter());
+        consoleWriter = new PrintWriterConsoleWriter(lineBuffer.printWriter());
+        consoleWriter.setDebugEnabled(true);
         initialProgramConfiguration = ProgramConfiguration.empty().withFileSystem(fileSystem);
     }
 
@@ -64,7 +65,7 @@ class TargetOptionHandlerTest {
 
         assertThat(Files.exists(expectedFolder)).isTrue();
         assertThat(actual.target()).isEqualTo(expectedFolder);
-        assertThat(lineBuffer.lines()).containsExactly("The given target directory [%s] did not exist. It's created now.".formatted(expectedFolder));
+        assertThat(lineBuffer.lines()).containsExactly("DEBUG: The given target directory [%s] did not exist. It's created now.".formatted(expectedFolder));
     }
 
     @SneakyThrows
@@ -80,7 +81,7 @@ class TargetOptionHandlerTest {
         var actual = new TargetOptionHandler(consoleWriter).handleCommandLine(commandLine, initialProgramConfiguration);
 
         assertThat(actual.target()).isNull();
-        assertThat(lineBuffer.lines()).containsExactly("The given target directory [%s] is not a directory.".formatted(expectedFolder
+        assertThat(lineBuffer.lines()).containsExactly("WARN: The given target directory [%s] is not a directory.".formatted(expectedFolder
             .toAbsolutePath()
             .toString()));
     }
@@ -99,9 +100,8 @@ class TargetOptionHandlerTest {
 
         assertThat(actual.target()).isNull();
         assertThat(lineBuffer.lines()).contains(
-            "The given target directory [/:&|] did not exist. It could also not be created.",
-            "Hence, the option is ignored and the dry run mode has been enabled.",
-            "");
+            "WARN: The given target directory [/:&|] did not exist. It could also not be created.",
+            "WARN: Hence, the option is ignored and the dry run mode has been enabled.");
     }
 
 

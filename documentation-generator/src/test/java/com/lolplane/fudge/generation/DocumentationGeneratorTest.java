@@ -6,7 +6,7 @@ import java.nio.file.Path;
 import java.util.stream.Collectors;
 
 import com.google.common.jimfs.Jimfs;
-import com.lolplane.fudge.ConsoleWriter;
+import com.lolplane.fudge.PrintWriterConsoleWriter;
 import com.lolplane.fudge.jgiven.JGivenJsonParser;
 import com.lolplane.fudge.jgiven.TestIOUtils;
 import lombok.SneakyThrows;
@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class DocumentationGeneratorTest {
 
-    private final ConsoleWriter consoleWriter = new ConsoleWriter();
+    private final PrintWriterConsoleWriter consoleWriter = new PrintWriterConsoleWriter();
 
     @SneakyThrows
     @Test

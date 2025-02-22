@@ -1,6 +1,6 @@
 package com.lolplane.fudge.jgiven;
 
-import com.lolplane.fudge.ConsoleWriter;
+import com.lolplane.fudge.PrintWriterConsoleWriter;
 import com.lolplane.fudge.jgiven.dto.JGivenScenario;
 import com.lolplane.fudge.jgiven.dto.JGivenTag;
 import com.lolplane.fudge.jgiven.dto.JGivenTestClass;
@@ -14,7 +14,7 @@ class JGivenJsonParserTest {
     @Test
     @DisplayName("should parse JGiven JSON report properly")
     void shouldParseJGivenJsonReportProperly() {
-        var actual = new JGivenJsonParser(new ConsoleWriter()).parseReportFiles(TestIOUtils.fileUrl("jgiven-report.json"));
+        var actual = new JGivenJsonParser(new PrintWriterConsoleWriter()).parseReportFiles(TestIOUtils.fileUrl("jgiven-report.json"));
 
         assertThat(actual).isNotNull();
         assertThat(actual.testClasses().get(0).scenarios().get(0).scenarioCases().get(0).steps().get(1).words())

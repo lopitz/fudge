@@ -1,6 +1,6 @@
 package com.lolplane.fudge.jgiven.dto;
 
-import com.lolplane.fudge.ConsoleWriter;
+import com.lolplane.fudge.PrintWriterConsoleWriter;
 import com.lolplane.fudge.jgiven.JGivenJsonParser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,7 +15,7 @@ class JGivenReportTest {
 
     @BeforeEach
     void setupTest() {
-        report = new JGivenJsonParser(new ConsoleWriter()).parseReportFiles(fileUrl("jgiven-report.json"));
+        report = new JGivenJsonParser(new PrintWriterConsoleWriter()).parseReportFiles(fileUrl("jgiven-report.json"));
     }
 
     @Test

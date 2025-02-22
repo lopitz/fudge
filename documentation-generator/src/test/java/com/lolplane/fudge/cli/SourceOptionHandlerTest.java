@@ -2,7 +2,7 @@ package com.lolplane.fudge.cli;
 
 import java.nio.file.Path;
 
-import com.lolplane.fudge.ConsoleWriter;
+import com.lolplane.fudge.PrintWriterConsoleWriter;
 import com.lolplane.fudge.tools.LineBuffer;
 import lombok.SneakyThrows;
 import org.apache.commons.cli.DefaultParser;
@@ -17,13 +17,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class SourceOptionHandlerTest {
 
-    private ConsoleWriter consoleWriter;
+    private PrintWriterConsoleWriter consoleWriter;
     private LineBuffer lineBuffer;
 
     @BeforeEach
     void setUp() {
         lineBuffer = new LineBuffer();
-        consoleWriter = new ConsoleWriter(lineBuffer.printWriter());
+        consoleWriter = new PrintWriterConsoleWriter(lineBuffer.printWriter());
     }
 
     @AfterEach
@@ -52,7 +52,7 @@ class SourceOptionHandlerTest {
         var actual = new SourceOptionHandler(consoleWriter).handleCommandLine(commandLine, ProgramConfiguration.empty());
 
         assertThat(actual.source()).isNull();
-        assertThat(lineBuffer.lines()).containsExactly("The given source directory [expected] does not exist.");
+        assertThat(lineBuffer.lines()).containsExactly("WARN: The given source directory [expected] does not exist.");
     }
 
     @SneakyThrows
@@ -65,7 +65,7 @@ class SourceOptionHandlerTest {
         var actual = new SourceOptionHandler(consoleWriter).handleCommandLine(commandLine, ProgramConfiguration.empty());
 
         assertThat(actual.source()).isNull();
-        assertThat(lineBuffer.lines()).containsExactly("The given source directory [%s] is not a directory.".formatted(tempFile.getAbsolutePath()));
+        assertThat(lineBuffer.lines()).containsExactly("WARN: The given source directory [%s] is not a directory.".formatted(tempFile.getAbsolutePath()));
     }
 
     @SneakyThrows

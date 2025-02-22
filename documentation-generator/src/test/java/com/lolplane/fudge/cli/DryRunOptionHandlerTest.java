@@ -2,7 +2,7 @@ package com.lolplane.fudge.cli;
 
 import java.io.IOException;
 
-import com.lolplane.fudge.ConsoleWriter;
+import com.lolplane.fudge.PrintWriterConsoleWriter;
 import com.lolplane.fudge.tools.LineBuffer;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Option;
@@ -19,13 +19,13 @@ class DryRunOptionHandlerTest {
 
     private final Option option = CommandLineOptions.dryRunOption();
 
-    private ConsoleWriter consoleWriter;
+    private PrintWriterConsoleWriter consoleWriter;
     private LineBuffer lineBuffer;
 
     @BeforeEach
     void setUp() {
         lineBuffer = new LineBuffer();
-        consoleWriter = new ConsoleWriter(lineBuffer.printWriter());
+        consoleWriter = new PrintWriterConsoleWriter(lineBuffer.printWriter());
     }
 
     @AfterEach
@@ -70,11 +70,9 @@ class DryRunOptionHandlerTest {
         new DryRunOptionHandler(consoleWriter).handleCommandLine(commandLine, ProgramConfiguration.empty());
 
         assertThat(lineBuffer.lines()).containsExactly(
-            "",
-            "The dry run mode has been enabled.",
-            "The JGiven input data will be analyzed and the feature documentation will be prepared in memory.",
-            "However, there won't be any changes written to the file system.",
-            "");
+            "INFO: The dry run mode has been enabled.",
+            "INFO: The JGiven input data will be analyzed and the feature documentation will be prepared in memory.",
+            "INFO: However, there won't be any changes written to the file system.");
     }
 
 }

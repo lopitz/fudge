@@ -25,11 +25,11 @@ public class ProgramConfigurationBuilder {
     private final ConsoleWriter consoleWriter;
     private final CommandLineParser parser = new DefaultParser();
 
-    public ProgramConfigurationAndErrors buildProgramConfiguration(String... args) throws ParseException {
-        if (args.length == 0) {
+    public ProgramConfigurationAndErrors buildProgramConfiguration(List<String> args) throws ParseException {
+        if (args.isEmpty()) {
             return new ProgramConfigurationAndErrors(ProgramConfiguration.empty().withHelpRequested(true), List.of());
         }
-        var commandLine = parser.parse(CommandLineOptions.options(), args);
+        var commandLine = parser.parse(CommandLineOptions.options(), args.toArray(new String[0]));
         var constructorsAndErrors = findAllOptionHandlerConstructors();
         var errors = constructorsAndErrors.stream().flatMap(e -> e.left().stream()).toList();
         var constructors = constructorsAndErrors.stream().flatMap(e -> e.right().stream()).toList();

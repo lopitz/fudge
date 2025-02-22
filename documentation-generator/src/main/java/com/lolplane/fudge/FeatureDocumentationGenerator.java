@@ -12,44 +12,48 @@ import org.apache.commons.cli.ParseException;
 
 public class FeatureDocumentationGenerator {
 
-    private static ConsoleWriter consoleWriter;
-
     @SuppressWarnings("java:S106") // System.out is used here as default on command line
     public static void main(String[] args) {
-        consoleWriter = new ConsoleWriter();
-        parseCommandLineAndGenerateDocumentation(args);
+        parseCommandLineAndGenerateDocumentation(new PrintWriterConsoleWriter(), args);
     }
 
-    private static void parseCommandLineAndGenerateDocumentation(String[] args) {
+    public static void parseCommandLineAndGenerateDocumentation(ConsoleWriter consoleWriter, String... args) {
+        parseCommandLineAndGenerateDocumentation(consoleWriter, List.of(args));
+    }
+
+    public static void parseCommandLineAndGenerateDocumentation(ConsoleWriter consoleWriter, List<String> args) {
         try {
-            var config = buildProgramConfiguration(args);
+            var config = buildProgramConfiguration(consoleWriter, args);
             if (config.helpRequested()) {
                 CommandLineOptions.printHelp(consoleWriter);
+                return;
             }
-            generateDocumentation(config);
+            generateDocumentation(consoleWriter, config);
         } catch (ParseException exp) {
-            consoleWriter.println("Parsing failed. Reason: %s".formatted(exp.getMessage()));
+            consoleWriter.error("Parsing failed. Reason: %s".formatted(exp.getMessage()));
         } catch (Exception e) {
             if (e.getCause() != null) {
-                consoleWriter.error("Something went wrong.  Reason: {}", e.getCause().getMessage(), e.getCause());
+                consoleWriter.error("Something went wrong. Reason: {}", e.getCause().getMessage(), e.getCause());
             } else {
-                consoleWriter.error("Something went wrong.  Reason: {}", e.getMessage(), e);
+                consoleWriter.error("Something went wrong. Reason: {}", e.getMessage(), e);
             }
         }
     }
 
-    private static ProgramConfiguration buildProgramConfiguration(String[] args) throws ParseException {
+    private static ProgramConfiguration buildProgramConfiguration(ConsoleWriter consoleWriter, List<String> args) throws ParseException {
         var configurationAndErrors = new ProgramConfigurationBuilder(consoleWriter).buildProgramConfiguration(args);
-        printErrors(configurationAndErrors.errors());
+        printErrors(consoleWriter, configurationAndErrors.errors());
         return configurationAndErrors.configuration();
     }
 
-    private static void printErrors(List<Exception> errors) {
-        errors.forEach(error -> consoleWriter.println(error.getMessage()));
+    private static void printErrors(ConsoleWriter consoleWriter, List<Exception> errors) {
+        errors.forEach(error -> consoleWriter.error(error.getMessage()));
     }
 
-    private static void generateDocumentation(ProgramConfiguration config) throws IOException {
-        consoleWriter.setDebugEnabled(config.verboseModeEnabled());
+    private static void generateDocumentation(ConsoleWriter consoleWriter, ProgramConfiguration config) throws IOException {
+        if (consoleWriter instanceof PrintWriterConsoleWriter pw) {
+            pw.setDebugEnabled(config.verboseModeEnabled());
+        }
         var generator = new DocumentationGenerator(consoleWriter, new JGivenJsonParser(consoleWriter), config.fileSystem());
         generator.generateDocumentation(new DocumentationParameters(config.source(), config.target(), null, null, null));
     }

@@ -2,7 +2,7 @@ package com.lolplane.fudge.generation;
 
 import java.util.List;
 
-import com.lolplane.fudge.ConsoleWriter;
+import com.lolplane.fudge.PrintWriterConsoleWriter;
 import com.lolplane.fudge.generation.dto.Case;
 import com.lolplane.fudge.generation.dto.ConnectedIssue;
 import com.lolplane.fudge.generation.dto.Line;
@@ -23,7 +23,7 @@ class ScenarioToTestMapperTest {
     @DisplayName("should create description with parameterNames and case table")
     @SneakyThrows
     void shouldCreateDescriptionWithParameterNamesAndCaseTable() {
-        var jGivenReport = new JGivenJsonParser(new ConsoleWriter()).parseReportFiles(fileUrl("jgiven-report-with-parameters.json"));
+        var jGivenReport = new JGivenJsonParser(new PrintWriterConsoleWriter()).parseReportFiles(fileUrl("jgiven-report-with-parameters.json"));
         var jGivenTestClass = jGivenReport.testClasses().get(0);
         var jGivenScenario = jGivenTestClass.scenarios().get(0);
 

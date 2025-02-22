@@ -4,7 +4,7 @@ import java.lang.annotation.Annotation;
 import java.util.Map;
 import java.util.Optional;
 
-import com.lolplane.fudge.ConsoleWriter;
+import com.lolplane.fudge.PrintWriterConsoleWriter;
 import com.lolplane.fudge.annotations.Epic;
 import com.lolplane.fudge.annotations.Story;
 import com.tngtech.jgiven.annotation.TagHrefGenerator;
@@ -19,18 +19,18 @@ public class JiraLinkGenerator implements TagHrefGenerator {
     private static final String JIRA_URL = "%s/browse/%s";
 
     private final Map<String, String> environmentVariables;
-    private final ConsoleWriter consoleWriter;
+    private final PrintWriterConsoleWriter consoleWriter;
 
     @SuppressWarnings("unused") //called by JGiven
     public JiraLinkGenerator() {
-        this(new ConsoleWriter(), System.getenv());
+        this(new PrintWriterConsoleWriter(), System.getenv());
     }
 
-    public JiraLinkGenerator(ConsoleWriter consoleWriter) {
+    public JiraLinkGenerator(PrintWriterConsoleWriter consoleWriter) {
         this(consoleWriter, System.getenv());
     }
 
-    public JiraLinkGenerator(ConsoleWriter consoleWriter, Map<String, String> environmentVariables) {
+    public JiraLinkGenerator(PrintWriterConsoleWriter consoleWriter, Map<String, String> environmentVariables) {
         this.consoleWriter = consoleWriter;
         this.environmentVariables = environmentVariables;
     }

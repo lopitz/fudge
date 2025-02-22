@@ -29,20 +29,19 @@ public class TargetOptionHandler implements OptionHandler {
         }
         try {
             Files.createDirectories(targetPath);
-            consoleWriter.printf("The given target directory [%s] did not exist. It's created now.%n", targetPath);
+            consoleWriter.debug("The given target directory [{}] did not exist. It's created now.", targetPath);
             return currentConfiguration.withTarget(targetPath);
         } catch (IOException e) {
-            consoleWriter.printf("The given target directory [%s] did not exist. It could also not be created.%n", targetPath);
-            consoleWriter.println("Hence, the option is ignored and the dry run mode has been enabled.");
-            consoleWriter.println();
-            consoleWriter.println(e.getMessage());
+            consoleWriter.warn("The given target directory [{}] did not exist. It could also not be created.", targetPath);
+            consoleWriter.warn("Hence, the option is ignored and the dry run mode has been enabled.");
+            consoleWriter.warn(e.getMessage());
         }
         return currentConfiguration;
     }
 
     private ProgramConfiguration checkTargetFolderIsDirectory(Path targetPath, ProgramConfiguration currentConfiguration) {
         if (!Files.isDirectory(targetPath)) {
-            consoleWriter.printf("The given target directory [%s] is not a directory.%n", targetPath);
+            consoleWriter.warn("The given target directory [{}] is not a directory.", targetPath);
             return currentConfiguration;
         }
         return currentConfiguration.withTarget(targetPath);

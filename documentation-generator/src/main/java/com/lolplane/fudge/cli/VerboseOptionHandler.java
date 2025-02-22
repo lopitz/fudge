@@ -24,9 +24,7 @@ public class VerboseOptionHandler implements OptionHandler {
     }
 
     private void writeInformation() {
-        consoleWriter.println();
-        consoleWriter.println("The verbose mode has been enabled.");
-        consoleWriter.println("The program will generate a lot of messages.");
-        consoleWriter.println();
+        consoleWriter.info("The verbose mode has been enabled.");
+        consoleWriter.info("The program will generate a lot of messages.");
     }
 }

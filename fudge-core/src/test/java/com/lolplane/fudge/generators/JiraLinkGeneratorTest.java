@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 
-import com.lolplane.fudge.ConsoleWriter;
+import com.lolplane.fudge.PrintWriterConsoleWriter;
 import com.lolplane.fudge.annotations.Story;
 import com.lolplane.fudge.tools.LineBuffer;
 import lombok.SneakyThrows;
@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class JiraLinkGeneratorTest {
 
     private final LineBuffer capturedOutput = new LineBuffer();
-    private final ConsoleWriter consoleWriter = new ConsoleWriter(capturedOutput.printWriter());
+    private final PrintWriterConsoleWriter consoleWriter = new PrintWriterConsoleWriter(capturedOutput.printWriter());
 
     @Test
     @DisplayName("should generate jira link with given jira base url in story annotation")
