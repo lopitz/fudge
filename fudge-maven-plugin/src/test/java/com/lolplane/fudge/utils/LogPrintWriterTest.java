@@ -18,6 +18,8 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class LogPrintWriterTest {
 
+    private static final String HELLO_WORLD = " hello world! ";
+
     @Mock
     private Log log;
     @InjectMocks
@@ -72,7 +74,7 @@ class LogPrintWriterTest {
             @Test
             @DisplayName("should create an info message for a selected part")
             void shouldCreateAnInfoMessageForASelectedPart() {
-                var message = " hello world! ";
+                var message = HELLO_WORLD;
                 writer.write(message, 1, message.length() - 2);
                 writer.flush();
                 verify(log).info("hello world!");
@@ -91,29 +93,36 @@ class LogPrintWriterTest {
             @Test
             @DisplayName("should throw OutOfBoundsException if offset is smaller than 0")
             void shouldThrowOutOfBoundsExceptionIfOffsetIsSmallerThan0() {
-                var message = " hello world! ";
-                assertThatCode(() -> writer.write(message, -1, message.length() - 2)).isInstanceOf(IndexOutOfBoundsException.class);
+                var message = HELLO_WORLD;
+                var offset = -1;
+                var length = message.length() - 2;
+                assertThatCode(() -> writer.write(message, offset, length)).isInstanceOf(IndexOutOfBoundsException.class);
             }
 
             @Test
             @DisplayName("should throw OutOfBoundsException if offset is greater than input length")
             void shouldThrowOutOfBoundsExceptionIfOffsetIsGreaterThanInputLength() {
-                var message = " hello world! ";
-                assertThatCode(() -> writer.write(message, message.length() + 1, 1)).isInstanceOf(IndexOutOfBoundsException.class);
+                var message = HELLO_WORLD;
+                var offset = message.length() + 1;
+                var length = 1;
+                assertThatCode(() -> writer.write(message, offset, length)).isInstanceOf(IndexOutOfBoundsException.class);
             }
 
             @Test
             @DisplayName("should throw OutOfBoundsException if length is smaller than 0")
             void shouldThrowOutOfBoundsExceptionIfLengthIsSmallerThan0() {
-                var message = " hello world! ";
-                assertThatCode(() -> writer.write(message, 0, -1)).isInstanceOf(IndexOutOfBoundsException.class);
+                var offset = 0;
+                var length = -1;
+                assertThatCode(() -> writer.write(HELLO_WORLD, offset, length)).isInstanceOf(IndexOutOfBoundsException.class);
             }
 
             @Test
             @DisplayName("should throw OutOfBoundsException if offset + length is greater than input length")
             void shouldThrowOutOfBoundsExceptionIfOffsetPlusLengthIsGreaterThanInputLength() {
-                var message = " hello world! ";
-                assertThatCode(() -> writer.write(message, message.length() - 1, 2)).isInstanceOf(IndexOutOfBoundsException.class);
+                var message = HELLO_WORLD;
+                var offset = message.length() - 1;
+                var length = 2;
+                assertThatCode(() -> writer.write(message, offset, length)).isInstanceOf(IndexOutOfBoundsException.class);
             }
         }
 
@@ -124,8 +133,9 @@ class LogPrintWriterTest {
             @Test
             @DisplayName("should create an info message for a selected part of a character sequence")
             void shouldCreateAnInfoMessageForASelectedPartOfACharacterSequence() {
-                var message = " hello world! ";
-                writer.write(message.toCharArray(), 1, message.length() - 2);
+                var message = HELLO_WORLD.toCharArray();
+                int length = message.length - 2;
+                writer.write(message, 1, length);
                 writer.flush();
                 verify(log).info("hello world!");
             }
@@ -133,29 +143,36 @@ class LogPrintWriterTest {
             @Test
             @DisplayName("should throw OutOfBoundsException if offset is smaller than 0")
             void shouldThrowOutOfBoundsExceptionIfOffsetIsSmallerThan0() {
-                var message = " hello world! ";
-                assertThatCode(() -> writer.write(message.toCharArray(), -1, message.length() - 2)).isInstanceOf(IndexOutOfBoundsException.class);
+                var message = HELLO_WORLD.toCharArray();
+                var offset = -1;
+                int length = message.length - 2;
+                assertThatCode(() -> writer.write(message, offset, length)).isInstanceOf(IndexOutOfBoundsException.class);
             }
 
             @Test
             @DisplayName("should throw OutOfBoundsException if offset is greater than input length")
             void shouldThrowOutOfBoundsExceptionIfOffsetIsGreaterThanInputLength() {
-                var message = " hello world! ";
-                assertThatCode(() -> writer.write(message.toCharArray(), message.length() + 1, 1)).isInstanceOf(IndexOutOfBoundsException.class);
+                var message = HELLO_WORLD.toCharArray();
+                var offset = message.length + 1;
+                var length = 1;
+                assertThatCode(() -> writer.write(message, offset, length)).isInstanceOf(IndexOutOfBoundsException.class);
             }
 
             @Test
             @DisplayName("should throw OutOfBoundsException if length is smaller than 0")
             void shouldThrowOutOfBoundsExceptionIfLengthIsSmallerThan0() {
-                var message = " hello world! ";
-                assertThatCode(() -> writer.write(message.toCharArray(), 0, -1)).isInstanceOf(IndexOutOfBoundsException.class);
+                var message = HELLO_WORLD.toCharArray();
+                var offset = 0;
+                var length = -1;
+                assertThatCode(() -> writer.write(message, offset, length)).isInstanceOf(IndexOutOfBoundsException.class);
             }
 
             @Test
             @DisplayName("should throw OutOfBoundsException if offset + length is greater than input length")
             void shouldThrowOutOfBoundsExceptionIfOffsetPlusLengthIsGreaterThanInputLength() {
-                var message = " hello world! ";
-                assertThatCode(() -> writer.write(message.toCharArray(), message.length() - 1, 2)).isInstanceOf(IndexOutOfBoundsException.class);
+                var message = HELLO_WORLD.toCharArray();
+                var offset = message.length - 1;
+                assertThatCode(() -> writer.write(message, offset, 2)).isInstanceOf(IndexOutOfBoundsException.class);
             }
         }
     }
