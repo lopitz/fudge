@@ -14,14 +14,14 @@ public class FeatureDocumentationGenerator {
 
     @SuppressWarnings("java:S106") // System.out is used here as default on command line
     public static void main(String[] args) {
-        parseCommandLineAndGenerateDocumentation(new PrintWriterConsoleWriter(), args);
+        new FeatureDocumentationGenerator().parseCommandLineAndGenerateDocumentation(new PrintWriterConsoleWriter(), args);
     }
 
-    public static void parseCommandLineAndGenerateDocumentation(ConsoleWriter consoleWriter, String... args) {
+    public void parseCommandLineAndGenerateDocumentation(ConsoleWriter consoleWriter, String... args) {
         parseCommandLineAndGenerateDocumentation(consoleWriter, List.of(args));
     }
 
-    public static void parseCommandLineAndGenerateDocumentation(ConsoleWriter consoleWriter, List<String> args) {
+    public void parseCommandLineAndGenerateDocumentation(ConsoleWriter consoleWriter, List<String> args) {
         try {
             var config = buildProgramConfiguration(consoleWriter, args);
             if (config.helpRequested()) {
@@ -40,17 +40,17 @@ public class FeatureDocumentationGenerator {
         }
     }
 
-    private static ProgramConfiguration buildProgramConfiguration(ConsoleWriter consoleWriter, List<String> args) throws ParseException {
+    private ProgramConfiguration buildProgramConfiguration(ConsoleWriter consoleWriter, List<String> args) throws ParseException {
         var configurationAndErrors = new ProgramConfigurationBuilder(consoleWriter).buildProgramConfiguration(args);
         printErrors(consoleWriter, configurationAndErrors.errors());
         return configurationAndErrors.configuration();
     }
 
-    private static void printErrors(ConsoleWriter consoleWriter, List<Exception> errors) {
+    private void printErrors(ConsoleWriter consoleWriter, List<Exception> errors) {
         errors.forEach(error -> consoleWriter.error(error.getMessage()));
     }
 
-    private static void generateDocumentation(ConsoleWriter consoleWriter, ProgramConfiguration config) throws IOException {
+    private void generateDocumentation(ConsoleWriter consoleWriter, ProgramConfiguration config) throws IOException {
         if (consoleWriter instanceof PrintWriterConsoleWriter pw) {
             pw.setDebugEnabled(config.verboseModeEnabled());
         }
