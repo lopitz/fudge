@@ -1,5 +1,6 @@
 package com.lolplane.fudge.cli;
 
+import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -13,6 +14,7 @@ import com.lolplane.fudge.tools.LineBuffer;
 import lombok.SneakyThrows;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -33,7 +35,7 @@ class TargetOptionHandlerTest {
         lineBuffer = new LineBuffer();
         consoleWriter = new PrintWriterConsoleWriter(lineBuffer.printWriter());
         consoleWriter.setDebugEnabled(true);
-        initialProgramConfiguration = ProgramConfiguration.empty().withFileSystem(fileSystem);
+        initialProgramConfiguration = ProgramConfiguration.empty().withTargetFileSystem(fileSystem);
     }
 
     @AfterEach
@@ -90,7 +92,7 @@ class TargetOptionHandlerTest {
     @Test
     @DisplayName("should not change target, write error message and enable dry run mode if creation of target directory fails")
     void shouldNotChangeTargetWriteErrorMessageAndEnableDryRunModeIfCreationOfTargetDirectoryFails() {
-        initialProgramConfiguration = ProgramConfiguration.empty().withFileSystem(FileSystems.getDefault());
+        initialProgramConfiguration = ProgramConfiguration.empty().withSourceFileSystem(FileSystems.getDefault());
 
         var folderName = "/:&|";
         var expectedFolder = fileSystem.getPath(folderName).toAbsolutePath();
@@ -110,11 +112,23 @@ class TargetOptionHandlerTest {
     @DisplayName("should return given configuration if this option was not set by the command line")
     void shouldReturnGivenConfigurationIfThisOptionWasNotSetByTheCommandLine() {
         var expected = ProgramConfiguration.empty().withSource(Path.of("expected"));
-
         var commandLine = new DefaultParser().parse(new Options().addOption(CommandLineOptions.targetOption()), new String[]{});
 
         var actual = new TargetOptionHandler(consoleWriter).handleCommandLine(commandLine, expected);
 
         assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("should detect path traversal attack and ignore given parameter")
+    void shouldDetectPathTraversalAttackAndIgnoreGivenParameter() throws ParseException, IOException {
+        var folderName = "../../../../../etc/passwd";
+        var commandLine = new DefaultParser().parse(new Options().addOption(CommandLineOptions.targetOption()), new String[]{"-t", folderName});
+
+        var actual = new TargetOptionHandler(consoleWriter).handleCommandLine(commandLine, initialProgramConfiguration);
+
+        assertThat(actual.target()).isNull();
+        assertThat(lineBuffer.lines()).contains(
+            "WARN: The given target directory [../../../../../etc/passwd] contains potentially unsafe path sequences.");
     }
 }

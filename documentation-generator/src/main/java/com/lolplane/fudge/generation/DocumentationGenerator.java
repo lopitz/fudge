@@ -11,8 +11,10 @@ import java.net.URL;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -41,7 +43,7 @@ public class DocumentationGenerator {
     private final FileSystem fileSystem;
     private final ScenarioToTestMapper scenarioMapper = Mappers.getMapper(ScenarioToTestMapper.class);
     private final FolderCreator folderCreator;
-    private final MustacheFactory mustacheFactory = new DefaultMustacheFactory();
+    private final MustacheFactory mustacheFactory;
     private final PathNameCreator pathNameCreator = new PathNameCreator();
 
     public DocumentationGenerator(ConsoleWriter consoleWriter, JGivenJsonParser jgivenParser, FileSystem fileSystem) {
@@ -49,6 +51,10 @@ public class DocumentationGenerator {
         this.jgivenParser = jgivenParser;
         this.fileSystem = fileSystem;
         this.folderCreator = new FolderCreator(consoleWriter, fileSystem);
+
+        // Initialize Mustache factory
+        // Note: HTML escaping is handled in the escapeVariables method
+        this.mustacheFactory = new DefaultMustacheFactory();
     }
 
     public void generateDocumentation(DocumentationParameters documentationParameters) throws IOException {
@@ -83,11 +89,30 @@ public class DocumentationGenerator {
 
     private InputStream openTemplate(String templatePathName, String defaultTemplateName) throws IOException {
         if (templatePathName != null) {
-            var templatePath = fileSystem.getPath(templatePathName);
-            if (Files.isReadable(templatePath) && Files.isRegularFile(templatePath)) {
-                return Files.newInputStream(templatePath);
+            // Validate path to prevent path traversal attacks
+            if (!com.lolplane.fudge.security.PathValidator.isPathSafe(templatePathName)) {
+                consoleWriter.warn("The template path [{}] contains potentially unsafe path sequences.", templatePathName);
+                // Fall back to default template
+            } else {
+                var templatePath = fileSystem.getPath(templatePathName);
+                // Normalize the path to prevent path traversal attacks
+                templatePath = templatePath.normalize();
+
+                if (Files.isReadable(templatePath) && Files.isRegularFile(templatePath)) {
+                    InputStream inputStream = Files.newInputStream(templatePath);
+
+                    // Validate template content for potentially malicious content
+                    if (!validateTemplateContent(inputStream, templatePath.toString())) {
+                        // Fall back to default template
+                        consoleWriter.warn("The template [{}] contains potentially malicious content.", templatePath);
+                    } else {
+                        // Reopen the stream since it was consumed during validation
+                        return Files.newInputStream(templatePath);
+                    }
+                }
             }
         }
+
         return loadTemplateWithClassLoader(ClassLoader.getSystemClassLoader(), defaultTemplateName)
             .or(() -> loadTemplateWithClassLoader(DocumentationGenerator.class.getClassLoader(), defaultTemplateName))
             .map(this::openTemplate)
@@ -96,10 +121,32 @@ public class DocumentationGenerator {
     }
 
     private InputStream openTemplate(URL url) {
+        // Validate URL to ensure secure handling of external resources
+        if (!com.lolplane.fudge.security.URLValidator.isURLSafe(url)) {
+            throw new UncheckedIOException(new IOException("The URL [%s] is not allowed.".formatted(url.toString())));
+        }
+
         try {
+            InputStream inputStream = url.openStream();
+
+            // Validate template content for potentially malicious content
+            if (!validateTemplateContent(inputStream, url.toString())) {
+                throw new UncheckedIOException(new IOException("The template at URL [%s] contains potentially malicious content.".formatted(url.toString())));
+            }
+
+            // Reopen the stream since it was consumed during validation
             return url.openStream();
         } catch (IOException e) {
             throw new UncheckedIOException("Error opening template at URL [%s]".formatted(url.toString()), e);
+        }
+    }
+
+    private boolean validateTemplateContent(InputStream inputStream, String source) {
+        try {
+            return com.lolplane.fudge.security.TemplateValidator.isTemplateSafe(inputStream);
+        } catch (IOException e) {
+            consoleWriter.warn("Error validating template content from [{}]: {}", source, e.getMessage());
+            return false;
         }
     }
 
@@ -162,12 +209,64 @@ public class DocumentationGenerator {
         try (var templateReader = new InputStreamReader(template)) {
             var mustache = mustacheFactory.compile(templateReader, "features-index");
             var writer = new StringWriter();
-            mustache.execute(writer, variables);
+
+            // Escape user-provided content to prevent XSS attacks
+            Map<String, Object> escapedVariables = escapeVariables(variables);
+
+            mustache.execute(writer, escapedVariables);
             Files.writeString(resultPath, writer.toString());
             consoleWriter.debug("Generated documentation page at {}", resultPath);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    /**
+     * Escapes user-provided content in variables to prevent XSS attacks.
+     *
+     * @param variables The variables to escape
+     * @return The escaped variables
+     */
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> escapeVariables(Map<String, Object> variables) {
+        Map<String, Object> result = new HashMap<>(variables.size());
+
+        for (Map.Entry<String, Object> entry : variables.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+
+            if (value instanceof String) {
+                // Escape string values
+                result.put(key, com.lolplane.fudge.security.HTMLEscaper.escapeHtml((String) value));
+            } else if (value instanceof Collection) {
+                // Recursively escape collections
+                Collection<Object> collection = (Collection<Object>) value;
+                List<Object> escapedCollection = new ArrayList<>(collection.size());
+
+                for (Object item : collection) {
+                    if (item instanceof Map) {
+                        // Recursively escape maps in collections
+                        escapedCollection.add(escapeVariables((Map<String, Object>) item));
+                    } else if (item instanceof String) {
+                        // Escape string values in collections
+                        escapedCollection.add(com.lolplane.fudge.security.HTMLEscaper.escapeHtml((String) item));
+                    } else {
+                        // Keep other values as is
+                        escapedCollection.add(item);
+                    }
+                }
+
+                result.put(key, escapedCollection);
+            } else if (value instanceof Map) {
+                // Recursively escape maps
+                result.put(key, escapeVariables((Map<String, Object>) value));
+            } else {
+                // Keep other values as is
+                result.put(key, value);
+            }
+        }
+
+        return result;
     }
 
     private void buildFeatures(List<Feature> featureDtos, InputStream featureTemplate, DocumentationParameters documentationParameters, Path targetRootPath) {

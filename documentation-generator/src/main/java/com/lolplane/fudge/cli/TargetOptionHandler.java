@@ -3,8 +3,10 @@ package com.lolplane.fudge.cli;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
 
 import com.lolplane.fudge.ConsoleWriter;
+import com.lolplane.fudge.security.PathValidator;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.cli.CommandLine;
 
@@ -19,8 +21,18 @@ public class TargetOptionHandler implements OptionHandler {
         if (optionValue == null) {
             return currentConfiguration;
         }
-        var targetPath = currentConfiguration.fileSystem().getPath(optionValue);
-        return checkThatTargetFolderExistsAndCreateIfNecessary(targetPath, currentConfiguration);
+
+        return preventTraversalAttacks(currentConfiguration.targetFileSystem().getPath(optionValue))
+            .map(targetPath -> checkThatTargetFolderExistsAndCreateIfNecessary(targetPath, currentConfiguration))
+            .orElse(currentConfiguration);
+    }
+
+    private Optional<Path> preventTraversalAttacks(Path targetPath) {
+        if (PathValidator.isPathSafe(targetPath.toString())) {
+            return Optional.of(targetPath.normalize());
+        }
+        consoleWriter.warn("The given target directory [{}] contains potentially unsafe path sequences.", targetPath);
+        return Optional.empty();
     }
 
     private ProgramConfiguration checkThatTargetFolderExistsAndCreateIfNecessary(Path targetPath, ProgramConfiguration currentConfiguration) {

@@ -54,7 +54,7 @@ public class FeatureDocumentationGenerator {
         if (consoleWriter instanceof PrintWriterConsoleWriter pw) {
             pw.setDebugEnabled(config.verboseModeEnabled());
         }
-        var generator = new DocumentationGenerator(consoleWriter, new JGivenJsonParser(consoleWriter), config.fileSystem());
+        var generator = new DocumentationGenerator(consoleWriter, new JGivenJsonParser(consoleWriter), config.targetFileSystem());
         generator.generateDocumentation(new DocumentationParameters(config.source(), config.target(), null, null, null));
     }
 

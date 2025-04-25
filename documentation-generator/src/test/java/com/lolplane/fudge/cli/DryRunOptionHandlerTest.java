@@ -41,7 +41,7 @@ class DryRunOptionHandlerTest {
 
         var actual = new DryRunOptionHandler(consoleWriter).handleCommandLine(commandLine, ProgramConfiguration.empty());
 
-        assertThat(actual.fileSystem().provider().getClass().getName()).isEqualTo("com.google.common.jimfs.JimfsFileSystemProvider");
+        assertThat(actual.targetFileSystem().provider().getClass().getName()).isEqualTo("com.google.common.jimfs.JimfsFileSystemProvider");
     }
 
     @Test
@@ -59,7 +59,7 @@ class DryRunOptionHandlerTest {
 
         var actual = new DryRunOptionHandler(consoleWriter).handleCommandLine(commandLine, ProgramConfiguration.empty());
 
-        assertThat(actual.fileSystem().provider().getClass().getName()).isNotEqualTo("com.google.common.jimfs.JimfsFileSystemProvider");
+        assertThat(actual.targetFileSystem().provider().getClass().getName()).isNotEqualTo("com.google.common.jimfs.JimfsFileSystemProvider");
     }
 
     @Test

@@ -3,6 +3,7 @@ package com.lolplane.fudge;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterAll;
@@ -51,8 +52,9 @@ class FeatureDocumentationGeneratorTest {
     @Test
     @DisplayName("should call document generator if help was not requested")
     void shouldCallDocumentGeneratorIfHelpWasNotRequested() {
-        FeatureDocumentationGenerator.main(new String[]{"-n", "-s", "non-existing path:!", "-t", "FeatureDocumentationGeneratorTest"});
-        assertThat(capturedOutput.toString(StandardCharsets.UTF_8)).contains("The given source directory [non-existing path:!] does not exist.");
+        var expected = Path.of("/non-existing path:!");
+        FeatureDocumentationGenerator.main(new String[]{"-n", "-s", "/non-existing path:!", "-t", "FeatureDocumentationGeneratorTest"});
+        assertThat(capturedOutput.toString(StandardCharsets.UTF_8)).contains("The given source directory [%s] does not exist.".formatted(expected.toString()));
     }
 
     @SneakyThrows

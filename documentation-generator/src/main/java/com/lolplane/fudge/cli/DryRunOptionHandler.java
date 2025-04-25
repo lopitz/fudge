@@ -19,7 +19,7 @@ public class DryRunOptionHandler implements OptionHandler {
     public ProgramConfiguration handleCommandLine(CommandLine commandLine, ProgramConfiguration currentConfiguration) {
         if (commandLine.hasOption(CommandLineOptions.dryRunOption())) {
             writeInformation();
-            return currentConfiguration.withFileSystem(Jimfs.newFileSystem());
+            return currentConfiguration.withTargetFileSystem(Jimfs.newFileSystem());
         }
         return currentConfiguration;
     }

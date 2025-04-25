@@ -10,7 +10,8 @@ import lombok.With;
 
 @With
 public record ProgramConfiguration(
-    FileSystem fileSystem,
+    FileSystem sourceFileSystem,
+    FileSystem targetFileSystem,
     Path source,
     Path target,
     boolean helpRequested,
@@ -18,6 +19,6 @@ public record ProgramConfiguration(
     boolean verboseModeEnabled
 ) {
     public static ProgramConfiguration empty() {
-        return new ProgramConfiguration(FileSystems.getDefault(), null, null, false, new LinkedList<>(), false);
+        return new ProgramConfiguration(FileSystems.getDefault(), FileSystems.getDefault(), null, null, false, new LinkedList<>(), false);
     }
 }
